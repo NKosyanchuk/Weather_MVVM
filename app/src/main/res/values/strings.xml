@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Weather MVVM App</string>
+    <string name="today">Today</string>
+    <string name="feature_weather">Feature weather</string>
+    <string name="map">Map</string>
+    <string name="loading">Loading</string>
 </resources>
