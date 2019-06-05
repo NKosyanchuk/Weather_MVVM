@@ -11,7 +11,7 @@ import com.example.weathermvvmapp.database.future_db.FutureWeatherDao
 
 @Database(
     entities = [CurrentWeather::class, FutureWeather::class],
-    version = 1
+    version = 1, exportSchema = false
 )
 abstract class WeatherDatabase : RoomDatabase() {
     abstract fun currentWeatherDao(): CurrentWeatherDao

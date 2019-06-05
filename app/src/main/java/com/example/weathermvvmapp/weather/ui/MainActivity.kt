@@ -1,12 +1,12 @@
-package com.example.weathermvvmapp.ui
+package com.example.weathermvvmapp.weather.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.weathermvvmapp.R
 import com.example.weathermvvmapp.extensions.loadFragment
 import com.example.weathermvvmapp.extensions.showToast
-import com.example.weathermvvmapp.ui.current_weather.CurrentWeatherFragment
-import com.example.weathermvvmapp.ui.future_weather.FeatureWeatherFragment
+import com.example.weathermvvmapp.weather.ui.current_weather.CurrentWeatherFragment
+import com.example.weathermvvmapp.weather.ui.future_weather.FutureWeatherFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity(), MainMenuNavigator {
     }
 
     override fun showFeatureWeatherFragment() {
-        val featureWeatherFragment = FeatureWeatherFragment.newInstance()
+        val featureWeatherFragment = FutureWeatherFragment.newInstance()
         loadFragment(featureWeatherFragment)
     }
 
