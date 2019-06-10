@@ -1,8 +1,5 @@
 package com.example.weathermvvmapp.network
 
-import io.reactivex.Scheduler
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -10,8 +7,9 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
-const val API_KEY = "b6907d289e10d714a6e88b30761fae22"
-const val WEATHER_URL = "https://openweathermap.org/data/2.5/"
+const val API_KEY = "9559b7571ec00e4dd0b80e9337083adc"
+const val UNITS = "metric"
+const val WEATHER_URL = "https://api.openweathermap.org//data/2.5/"
 const val WEATHER_ICON_URL = "https://openweathermap.org/img/w/"
 
 private val requestInterceptor = Interceptor { chain ->
@@ -20,6 +18,7 @@ private val requestInterceptor = Interceptor { chain ->
         .url()
         .newBuilder()
         .addQueryParameter("appid", API_KEY)
+        .addQueryParameter("units", UNITS)
         .build()
     val request = chain.request()
         .newBuilder()
@@ -43,7 +42,3 @@ fun createApiInterface(): ApiWeatherInterface {
         .build()
     return retrofit.create(ApiWeatherInterface::class.java)
 }
-
-fun getWorkerScheduler() = Schedulers.io()
-
-fun getResultScheduler(): Scheduler = AndroidSchedulers.mainThread()

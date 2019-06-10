@@ -1,5 +1,6 @@
 package com.example.weathermvvmapp.repository
 
+import com.example.weathermvvmapp.database.WeatherDatabase
 import com.example.weathermvvmapp.database.current_db.CurrentWeather
 import com.example.weathermvvmapp.database.future_db.FutureWeather
 import com.example.weathermvvmapp.network.ApiWeatherInterface
@@ -8,6 +9,7 @@ import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import retrofit2.adapter.rxjava2.HttpException
+
 
 private const val RETRY_COUNT = 3L
 
@@ -21,15 +23,33 @@ interface SchedulersRepository {
     fun getResultScheduler(): Scheduler
 }
 
-class WeatherRepositoryProvider(private val apiWeatherInterface: ApiWeatherInterface) : WeatherRepository, SchedulersRepository {
+class WeatherRepositoryProvider(
+    private val apiWeatherInterface: ApiWeatherInterface,
+    private val weatherDatabase: WeatherDatabase
+) : WeatherRepository, SchedulersRepository {
     override fun getWorkerScheduler() = Schedulers.io()
 
     override fun getResultScheduler(): Scheduler = AndroidSchedulers.mainThread()
 
-    override fun getCurrentWeather(location: LocationProvider): Flowable<CurrentWeather> {
+    private fun getCurrentWeatherFromApi(location: LocationProvider): Flowable<CurrentWeather>? {
         return apiWeatherInterface
             .getCurrentWeather(location.latitude, location.longitude)
+            .doAfterSuccess { currentWeather: CurrentWeather ->
+                weatherDatabase.currentWeatherDao().insert(currentWeather)
+            }
+            .subscribeOn(getWorkerScheduler())
             .toFlowable()
+    }
+
+    private fun getCurrentWeatherFromDataBase(): Flowable<CurrentWeather>? {
+        return weatherDatabase.currentWeatherDao().getCurrentWeather()
+    }
+
+    override fun getCurrentWeather(location: LocationProvider): Flowable<CurrentWeather> {
+        return Flowable.mergeDelayError(
+            getCurrentWeatherFromApi(location),
+            getCurrentWeatherFromDataBase()
+        )
             .retry(RETRY_COUNT, ::retryPredicate)
     }
 

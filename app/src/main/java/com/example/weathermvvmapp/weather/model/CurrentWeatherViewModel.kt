@@ -4,6 +4,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import com.example.weathermvvmapp.database.WeatherDatabase
 import com.example.weathermvvmapp.database.current_db.CurrentWeather
 import com.example.weathermvvmapp.network.createApiInterface
 import com.example.weathermvvmapp.repository.LocationProvider
@@ -30,7 +31,7 @@ class CurrentWeatherViewModel(
         fun getInstance(fragment: Fragment, locationProvider: LocationProvider): CurrentWeatherViewModel {
             return ViewModelProviders.of(fragment, object : ViewModelProvider.Factory {
                 override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                    val weatherRepositoryProvider = WeatherRepositoryProvider(createApiInterface())
+                    val weatherRepositoryProvider = WeatherRepositoryProvider(createApiInterface(), WeatherDatabase.invoke(fragment.requireContext()))
                     return CurrentWeatherViewModel(locationProvider, weatherRepositoryProvider) as T
                 }
             })[CurrentWeatherViewModel::class.java]

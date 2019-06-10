@@ -6,13 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import com.example.weathermvvmapp.R
 import com.example.weathermvvmapp.database.current_db.CurrentWeather
 import com.example.weathermvvmapp.extensions.showToast
+import com.example.weathermvvmapp.network.WEATHER_ICON_URL
 import com.example.weathermvvmapp.repository.LocationProvider
 import com.example.weathermvvmapp.weather.model.CurrentWeatherViewModel
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.current_weather_fragment.*
 import kotlinx.android.synthetic.main.future_weather_fragment.loadingGroup
+
+
 
 class CurrentWeatherFragment : Fragment() {
 
@@ -26,7 +29,7 @@ class CurrentWeatherFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.current_weather_fragment, container, false)
+        return inflater.inflate(com.example.weathermvvmapp.R.layout.current_weather_fragment, container, false)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,10 +42,10 @@ class CurrentWeatherFragment : Fragment() {
 
         currentWeatherViewModel.data().observe(this, Observer { viewObject ->
             showProgress(viewObject.progress)
-            if (viewObject.error || viewObject.data == null) {
-                showToast("Error")
-            } else {
-                showCurrentWeather(viewObject.data)
+            when {
+                viewObject.data == null -> return@Observer
+                viewObject.error -> showToast("Error")
+                else -> showCurrentWeather(viewObject.data)
             }
         })
     }
@@ -54,6 +57,15 @@ class CurrentWeatherFragment : Fragment() {
         temperatureTv.text = temperatureObject.temp.toString()
         minTemperatureTv.text = temperatureObject.tempMin.toString()
         maxTemperatureTv.text = temperatureObject.tempMax.toString()
+        setupWeatherIcon(currentWeather)
+    }
+
+    private fun setupWeatherIcon(currentWeather: CurrentWeather) {
+        //https//openweathermap.org/img/w/03d.png
+        val iconURL = WEATHER_ICON_URL + currentWeather.weather[0].icon + ".png"
+        Picasso.get()
+            .load(iconURL)
+            .into(weatherIv)
     }
 
     private fun showProgress(progress: Boolean) {
