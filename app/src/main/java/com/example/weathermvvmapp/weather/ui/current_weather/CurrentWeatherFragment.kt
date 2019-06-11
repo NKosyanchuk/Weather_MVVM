@@ -9,12 +9,11 @@ import androidx.lifecycle.Observer
 import com.example.weathermvvmapp.database.current_db.CurrentWeather
 import com.example.weathermvvmapp.extensions.showToast
 import com.example.weathermvvmapp.network.WEATHER_ICON_URL
-import com.example.weathermvvmapp.repository.LocationProvider
 import com.example.weathermvvmapp.weather.model.CurrentWeatherViewModel
 import com.squareup.picasso.Picasso
+
 import kotlinx.android.synthetic.main.current_weather_fragment.*
 import kotlinx.android.synthetic.main.future_weather_fragment.loadingGroup
-
 
 
 class CurrentWeatherFragment : Fragment() {
@@ -34,17 +33,23 @@ class CurrentWeatherFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        currentWeatherViewModel = CurrentWeatherViewModel.getInstance(this, LocationProvider(48.5, 37.5))
+        currentWeatherViewModel = CurrentWeatherViewModel.getInstance(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        currentWeatherViewModel.data().observe(this, Observer { viewObject ->
+        currentWeatherViewModel.liveData().observe(this, Observer { viewObject ->
             showProgress(viewObject.progress)
             when {
                 viewObject.data == null -> return@Observer
-                viewObject.error -> showToast("Error")
+                viewObject.error -> {
+                    if (viewObject.throwable != null) {
+                        viewObject.throwable.message?.let { showToast(it) }
+                    } else {
+                        showToast("Error")
+                    }
+                }
                 else -> showCurrentWeather(viewObject.data)
             }
         })

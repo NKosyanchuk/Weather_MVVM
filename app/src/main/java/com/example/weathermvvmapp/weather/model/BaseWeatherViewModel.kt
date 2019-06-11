@@ -3,7 +3,7 @@ package com.example.weathermvvmapp.weather.model
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import io.reactivex.Flowable
+import io.reactivex.Observable
 import io.reactivex.Scheduler
 import io.reactivex.disposables.CompositeDisposable
 
@@ -13,48 +13,48 @@ abstract class BaseWeatherViewModel<T>(
 ) : ViewModel() {
 
     private val data = MutableLiveData<ViewObject<T>>().apply {
-        value = ViewObject(data = null, progress = false, error = false)
+        value = ViewObject(data = null, progress = false, error = false, throwable = null)
 
     }
 
     private val disposables = CompositeDisposable()
 
-    protected abstract fun createDataObservable(): Flowable<T>
+    protected abstract fun createDataObservable(): Observable<T>?
 
-    fun data(): LiveData<ViewObject<T>> = data
+    fun liveData(): LiveData<ViewObject<T>> = data
 
     protected fun fetchData() {
         val currentData = data.value
         if (currentData?.progress == true) {
             return
         }
-        data.value = currentData?.copy(progress = true)
+        data.postValue(currentData?.copy(progress = true))
 
-        disposables.add(
-            createDataObservable()
-                .subscribeOn(workerScheduler)
-                .observeOn(resultScheduler)
-                .subscribe(
-                    {
-                        val currentData = data.value
-                        data.value = currentData?.copy(data = it, progress = false, error = false)
-                    },
-                    {
-                        val currentData = data.value
-                        data.value = currentData?.copy(progress = false, error = true)
-                    }
-                ))
+        if (createDataObservable() != null) {
+            disposables.add(
+                createDataObservable()!!
+                    .subscribeOn(workerScheduler)
+                    .observeOn(resultScheduler)
+                    .subscribe(
+                        {
+                            data.postValue(currentData?.copy(data = it, progress = false, error = false, throwable = null))
+                        },
+                        {
+                            data.postValue(currentData?.copy(data = null, progress = false, error = true, throwable = it))
+                        }
+                    ))
+        }
     }
 
     override fun onCleared() {
         super.onCleared()
         disposables.clear()
     }
-
 }
 
 data class ViewObject<T>(
     val data: T?,
-    val progress: Boolean,
-    val error: Boolean
+    var progress: Boolean,
+    val error: Boolean,
+    val throwable: Throwable?
 )

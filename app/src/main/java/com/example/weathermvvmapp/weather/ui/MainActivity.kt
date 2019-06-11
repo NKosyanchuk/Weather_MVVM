@@ -1,15 +1,24 @@
 package com.example.weathermvvmapp.weather.ui
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.example.weathermvvmapp.R
 import com.example.weathermvvmapp.extensions.loadFragment
 import com.example.weathermvvmapp.extensions.showToast
+import com.example.weathermvvmapp.weather.LifecycleBoundLocationManager
 import com.example.weathermvvmapp.weather.ui.current_weather.CurrentWeatherFragment
 import com.example.weathermvvmapp.weather.ui.future_weather.FutureWeatherFragment
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationResult
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 
+private const val MY_PERMISSION_ACCESS_COARSE_LOCATION = 1
 
 interface MainMenuNavigator {
     fun showCurrentWeatherFragment()
@@ -20,6 +29,12 @@ interface MainMenuNavigator {
 class MainActivity : AppCompatActivity(), MainMenuNavigator {
 
     private lateinit var navigationItemSelectedListener: BottomNavigationView.OnNavigationItemSelectedListener
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    private val locationCallback = object : LocationCallback() {
+        override fun onLocationResult(p0: LocationResult?) {
+            super.onLocationResult(p0)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,8 +42,54 @@ class MainActivity : AppCompatActivity(), MainMenuNavigator {
         setSupportActionBar(toolbar)
         initBottomNavigation()
 
+        fusedLocationProviderClient = FusedLocationProviderClient(this)
+
+        requestLocationPermission()
+
+        if (hasLocationPermission()) {
+            bindLocationManager()
+        } else {
+            requestLocationPermission()
+        }
+
         if (savedInstanceState == null) {
             showCurrentWeatherFragment()
+        }
+    }
+
+    private fun requestLocationPermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
+            MY_PERMISSION_ACCESS_COARSE_LOCATION
+        )
+    }
+
+    private fun hasLocationPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun bindLocationManager() {
+        LifecycleBoundLocationManager(
+            this,
+            fusedLocationProviderClient, locationCallback
+        )
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == MY_PERMISSION_ACCESS_COARSE_LOCATION) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                bindLocationManager()
+            else {
+                showToast("Please allow the location permission")
+            }
         }
     }
 

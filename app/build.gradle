@@ -57,6 +57,7 @@ dependencies {
 
     // WeatherLocation
     implementation "com.google.android.gms:play-services-location:16.0.0"
+    implementation 'pl.charmas.android:android-reactive-location2:2.1@aar'
 
     // New Material Design
     implementation "com.google.android.material:material:1.0.0"

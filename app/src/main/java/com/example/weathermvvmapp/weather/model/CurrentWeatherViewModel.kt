@@ -9,11 +9,11 @@ import com.example.weathermvvmapp.database.current_db.CurrentWeather
 import com.example.weathermvvmapp.network.createApiInterface
 import com.example.weathermvvmapp.repository.LocationProvider
 import com.example.weathermvvmapp.repository.WeatherRepositoryProvider
-import io.reactivex.Flowable
+import io.reactivex.Observable
 
 class CurrentWeatherViewModel(
-    private val locationProvider: LocationProvider,
-    private val weatherRepositoryProvider: WeatherRepositoryProvider
+    private val weatherRepositoryProvider: WeatherRepositoryProvider,
+    private val locationProvider: LocationProvider
 ) : BaseWeatherViewModel<CurrentWeather>(
     weatherRepositoryProvider.getWorkerScheduler(),
     weatherRepositoryProvider.getResultScheduler()
@@ -23,16 +23,21 @@ class CurrentWeatherViewModel(
         fetchData()
     }
 
-    override fun createDataObservable(): Flowable<CurrentWeather> {
+    override fun createDataObservable(): Observable<CurrentWeather>? {
         return weatherRepositoryProvider.getCurrentWeather(locationProvider)
     }
 
     companion object {
-        fun getInstance(fragment: Fragment, locationProvider: LocationProvider): CurrentWeatherViewModel {
+        fun getInstance(fragment: Fragment): CurrentWeatherViewModel {
             return ViewModelProviders.of(fragment, object : ViewModelProvider.Factory {
                 override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                    val weatherRepositoryProvider = WeatherRepositoryProvider(createApiInterface(), WeatherDatabase.invoke(fragment.requireContext()))
-                    return CurrentWeatherViewModel(locationProvider, weatherRepositoryProvider) as T
+                    val weatherRepositoryProvider = WeatherRepositoryProvider(
+                        createApiInterface(),
+                        WeatherDatabase.invoke(fragment.requireContext())
+                    )
+
+                    val locationProvider = LocationProvider(fragment.requireContext().applicationContext)
+                    return CurrentWeatherViewModel(weatherRepositoryProvider, locationProvider) as T
                 }
             })[CurrentWeatherViewModel::class.java]
         }

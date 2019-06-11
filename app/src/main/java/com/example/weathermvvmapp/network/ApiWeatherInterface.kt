@@ -2,6 +2,7 @@ package com.example.weathermvvmapp.network
 
 import com.example.weathermvvmapp.database.current_db.CurrentWeather
 import com.example.weathermvvmapp.database.future_db.FutureWeather
+import io.reactivex.Observable
 import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -13,7 +14,7 @@ interface ApiWeatherInterface {
     fun getCurrentWeather(
         @Query("lat") lat: Double,
         @Query("lon") lon: Double
-    ): Single<CurrentWeather>
+    ): Observable<CurrentWeather>
 
     @GET("forecast/daily")
     fun getFutureWeather(
