@@ -4,7 +4,6 @@ package com.weather.weathermvvmapp.data.network
 import com.weather.weathermvvmapp.data.database.current_db.CurrentWeather
 import com.weather.weathermvvmapp.data.database.future_db.FutureWeather
 import io.reactivex.Observable
-import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -21,6 +20,6 @@ interface ApiWeatherInterface {
     fun getFutureWeather(
         @Query("lat") lat: Double,
         @Query("lon") lon: Double,
-        @Query("cnt") cnt: String = "10"
-    ): Single<FutureWeather>
+        @Query("cnt") cnt: Int
+    ): Observable<FutureWeather>
 }

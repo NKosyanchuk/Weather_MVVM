@@ -42,7 +42,6 @@ class CurrentWeatherFragment : Fragment() {
         currentWeatherViewModel.liveData().observe(this, Observer { viewObject ->
             showProgress(viewObject.progress)
             when {
-                viewObject.data == null -> return@Observer
                 viewObject.error -> {
                     if (viewObject.throwable != null) {
                         viewObject.throwable.message?.let { showToast(it) }
@@ -50,6 +49,7 @@ class CurrentWeatherFragment : Fragment() {
                         showToast("Error")
                     }
                 }
+                viewObject.data == null -> return@Observer
                 else -> showCurrentWeather(viewObject.data)
             }
         })

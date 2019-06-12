@@ -21,7 +21,7 @@ data class FutureWeather(
     @TypeConverters(FutureWeatherConverter::class)
     val list: ArrayList<FutureWeatherList>?,
     @SerializedName("message")
-    val message: Int
+    val message: Double
 ) {
     @PrimaryKey(autoGenerate = false)
     var id: Int = FUTURE_WEATHER_ID
