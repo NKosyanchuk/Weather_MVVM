@@ -10,6 +10,7 @@ import io.reactivex.Observable
 import pl.charmas.android.reactivelocation2.ReactiveLocationProvider
 
 
+
 interface LocationProviderInterface {
     fun getUserLastLocation(): Observable<Location>?
 }
@@ -22,7 +23,7 @@ class LocationProvider(
     override fun getUserLastLocation(): Observable<Location>? {
         return if (hasLocationPermission()) {
             val locationProvider = ReactiveLocationProvider(context)
-            locationProvider.lastKnownLocation
+            locationProvider.lastKnownLocation.takeUntil(Observable.timer(10,  java.util.concurrent.TimeUnit.SECONDS))
         } else {
             null
         }

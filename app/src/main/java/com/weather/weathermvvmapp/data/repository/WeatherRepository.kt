@@ -3,6 +3,7 @@ package com.weather.weathermvvmapp.data.repository
 import android.location.Location
 import com.weather.weathermvvmapp.data.database.WeatherDatabase
 import com.weather.weathermvvmapp.data.database.current_db.CurrentWeather
+import com.weather.weathermvvmapp.data.database.entity.FutureWeatherListObject
 import com.weather.weathermvvmapp.data.database.future_db.FutureWeather
 import com.weather.weathermvvmapp.data.network.ApiWeatherInterface
 import io.reactivex.Observable
@@ -14,10 +15,12 @@ import retrofit2.HttpException
 
 private const val RETRY_COUNT = 3L
 private const val DAYS = 10
+private const val TIMEOUT_INTERVAL = 15L
 
 interface WeatherRepository {
     fun getCurrentWeather(location: LocationProvider): Observable<CurrentWeather>?
     fun getFutureWeather(location: LocationProvider): Observable<FutureWeather>?
+    fun getFutureWeatherByDate(dateInMills: Long): Observable<FutureWeatherListObject?>
 }
 
 interface SchedulersRepository {
@@ -43,6 +46,7 @@ class WeatherRepositoryProvider(
 
     private fun getCurrentWeatherFromDataBase(): Observable<CurrentWeather> =
         weatherDatabase.currentWeatherDao().getCurrentWeather()
+            .takeUntil(Observable.timer(10, java.util.concurrent.TimeUnit.SECONDS))
             .subscribeOn(getWorkerScheduler())
 
     override fun getCurrentWeather(location: LocationProvider): Observable<CurrentWeather>? {
@@ -53,6 +57,7 @@ class WeatherRepositoryProvider(
                         getCurrentWeatherFromApi(userLocation)
                     }?.subscribeOn(getWorkerScheduler()),
                 getCurrentWeatherFromDataBase().retry(RETRY_COUNT, ::retryPredicate)
+                    .timeout(TIMEOUT_INTERVAL, java.util.concurrent.TimeUnit.SECONDS)
             )
         } else {
             return null
@@ -66,6 +71,7 @@ class WeatherRepositoryProvider(
             return Observable.mergeDelayError(location.getUserLastLocation()?.flatMap { userLocation: Location ->
                 getFutureWeatherFromApi(userLocation)
             }?.subscribeOn(getWorkerScheduler()), getFutureWeatherFromDatabase()).retry(RETRY_COUNT, ::retryPredicate)
+                .timeout(TIMEOUT_INTERVAL, java.util.concurrent.TimeUnit.SECONDS)
         } else {
             return null
         }
@@ -74,8 +80,29 @@ class WeatherRepositoryProvider(
     private fun getFutureWeatherFromApi(location: Location): Observable<FutureWeather>? =
         apiWeatherInterface.getFutureWeather(location.latitude, location.longitude, DAYS)
             .doOnNext { t: FutureWeather? -> t?.let { weatherDatabase.futureWeatherDao().insert(it) } }
+            .timeout(TIMEOUT_INTERVAL, java.util.concurrent.TimeUnit.SECONDS)
             .subscribeOn(getWorkerScheduler())
 
     private fun getFutureWeatherFromDatabase() = weatherDatabase.futureWeatherDao().getFutureWeather()
+        .takeUntil(Observable.timer(10, java.util.concurrent.TimeUnit.SECONDS))
         .subscribeOn(getWorkerScheduler())
+
+    override fun getFutureWeatherByDate(dateInMills: Long): Observable<FutureWeatherListObject?> {
+        return getFutureWeatherFromDatabase()
+            .flatMap { t: FutureWeather ->
+                Observable.just(t.list)
+            }
+            .flatMap {
+                Observable.just(foundItem(it, dateInMills))
+            }.subscribeOn(getWorkerScheduler())
+    }
+
+    private fun foundItem(it: List<FutureWeatherListObject>, dateInMills: Long): FutureWeatherListObject? {
+        it.forEach { futureItem ->
+            if (futureItem.dt == dateInMills) {
+                return futureItem
+            }
+        }
+        return null
+    }
 }

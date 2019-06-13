@@ -19,7 +19,7 @@ data class FutureWeather(
     @SerializedName("list")
     @Embedded
     @TypeConverters(FutureWeatherConverter::class)
-    val list: ArrayList<FutureWeatherListObject>?,
+    val list: List<FutureWeatherListObject>?,
     @SerializedName("message")
     val message: Double
 ) {
