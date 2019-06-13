@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName
 import com.weather.weathermvvmapp.data.database.FUTURE_WEATHER_DATABASE_NAME
 import com.weather.weathermvvmapp.data.database.FUTURE_WEATHER_ID
 import com.weather.weathermvvmapp.data.database.FutureWeatherConverter
-import com.weather.weathermvvmapp.data.database.entity.FutureWeatherList
+import com.weather.weathermvvmapp.data.database.entity.FutureWeatherListObject
 
 @Entity(tableName = FUTURE_WEATHER_DATABASE_NAME)
 data class FutureWeather(
@@ -19,7 +19,7 @@ data class FutureWeather(
     @SerializedName("list")
     @Embedded
     @TypeConverters(FutureWeatherConverter::class)
-    val list: ArrayList<FutureWeatherList>?,
+    val list: ArrayList<FutureWeatherListObject>?,
     @SerializedName("message")
     val message: Double
 ) {

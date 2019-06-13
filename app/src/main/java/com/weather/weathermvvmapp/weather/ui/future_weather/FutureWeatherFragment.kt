@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weathermvvmapp.R
 import com.weather.weathermvvmapp.data.database.future_db.FutureWeather
 import com.weather.weathermvvmapp.extensions.showToast
@@ -20,6 +21,7 @@ class FutureWeatherFragment : Fragment() {
     }
 
     private lateinit var futureWeatherViewModel: FutureWeatherViewModel
+    private lateinit var futureWeatherAdapter: FutureWeatherAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,10 +38,11 @@ class FutureWeatherFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        initFutureWeatherListView()
+
         futureWeatherViewModel.liveData().observe(this, Observer { viewObject ->
             showProgress(viewObject.progress)
             when {
-                viewObject.data == null -> return@Observer
                 viewObject.error -> {
                     if (viewObject.throwable != null) {
                         viewObject.throwable.message?.let { showToast(it) }
@@ -47,9 +50,24 @@ class FutureWeatherFragment : Fragment() {
                         showToast("Error")
                     }
                 }
+                viewObject.data == null -> return@Observer
                 else -> showFutureWeather(viewObject.data)
             }
         })
+    }
+
+    private fun initFutureWeatherListView() {
+        futureWeatherAdapter = FutureWeatherAdapter { futureWeatherObjectDate ->
+            showDetailedWeather(futureWeatherObjectDate)
+        }
+        futureWeatherRv.apply {
+            adapter = futureWeatherAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+        }
+    }
+
+    private fun showDetailedWeather(futureWeatherObjectDate: Long) {
+        Log.d("Test", futureWeatherObjectDate.toString())
     }
 
     private fun showProgress(progress: Boolean) {
@@ -62,6 +80,7 @@ class FutureWeatherFragment : Fragment() {
 
 
     private fun showFutureWeather(futureWeather: FutureWeather) {
-        Log.d("Test", futureWeather.toString())
+        if (futureWeather.list != null)
+            futureWeatherAdapter.updateWeather(futureWeather.list)
     }
 }

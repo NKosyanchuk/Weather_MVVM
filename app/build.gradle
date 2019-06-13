@@ -52,9 +52,6 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
     kapt "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
 
-    // Date-time wrapper
-    implementation "com.jakewharton.threetenabp:threetenabp:1.1.0"
-
     // WeatherLocation
     implementation "com.google.android.gms:play-services-location:16.0.0"
     implementation 'pl.charmas.android:android-reactive-location2:2.1@aar'

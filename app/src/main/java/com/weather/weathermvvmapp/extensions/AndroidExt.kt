@@ -4,6 +4,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.weathermvvmapp.R
+import java.text.SimpleDateFormat
+import java.util.*
 
 fun AppCompatActivity.loadFragment(fragment: Fragment) {
     val ft = supportFragmentManager.beginTransaction()
@@ -17,4 +19,11 @@ fun AppCompatActivity.showToast(message: String) {
 
 fun Fragment.showToast(message: String) {
     Toast.makeText(this.requireContext(), message, Toast.LENGTH_LONG).show()
+}
+
+fun getDateFromString(mills: Long): String {
+    val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    val calendar = Calendar.getInstance()
+    calendar.timeInMillis = mills
+    return formatter.format(calendar.time)
 }

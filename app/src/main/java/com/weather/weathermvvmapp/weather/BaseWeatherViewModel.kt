@@ -69,6 +69,15 @@ abstract class BaseWeatherViewModel<T>(
                             )
                         }
                     ))
+        } else {
+            mutableLiveData.postValue(
+                currentData?.copy(
+                    data = null,
+                    progress = false,
+                    error = true,
+                    throwable = Throwable(message = "No location permission or location found")
+                )
+            )
         }
     }
 

@@ -65,7 +65,7 @@
                 tools:text="Clear"/>
 
         <ImageView
-                android:id="@+id/imageView_condition_icon"
+                android:id="@+id/weatherIv"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginStart="20dp"

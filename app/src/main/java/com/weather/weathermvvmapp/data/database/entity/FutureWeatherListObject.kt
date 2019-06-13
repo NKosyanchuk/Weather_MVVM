@@ -3,13 +3,13 @@ package com.weather.weathermvvmapp.data.database.entity
 
 import com.google.gson.annotations.SerializedName
 
-data class FutureWeatherList(
+data class FutureWeatherListObject(
     @SerializedName("clouds")
     val clouds: Int,
     @SerializedName("deg")
     val deg: Int,
     @SerializedName("dt")
-    val dt: Int,
+    val dt: Long,
     @SerializedName("humidity")
     val humidity: Int,
     @SerializedName("pressure")

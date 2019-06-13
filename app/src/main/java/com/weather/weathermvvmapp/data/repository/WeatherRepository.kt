@@ -45,21 +45,31 @@ class WeatherRepositoryProvider(
         weatherDatabase.currentWeatherDao().getCurrentWeather()
             .subscribeOn(getWorkerScheduler())
 
-    override fun getCurrentWeather(location: LocationProvider): Observable<CurrentWeather>? =
-        Observable.mergeDelayError(
-            location.getUserLastLocation()
-                ?.flatMap { userLocation: Location ->
-                    getCurrentWeatherFromApi(userLocation)
-                }?.subscribeOn(getWorkerScheduler()),
-            getCurrentWeatherFromDataBase().retry(RETRY_COUNT, ::retryPredicate)
-        )
+    override fun getCurrentWeather(location: LocationProvider): Observable<CurrentWeather>? {
+        if (location.hasLocationPermission()) {
+            return Observable.mergeDelayError(
+                location.getUserLastLocation()
+                    ?.flatMap { userLocation: Location ->
+                        getCurrentWeatherFromApi(userLocation)
+                    }?.subscribeOn(getWorkerScheduler()),
+                getCurrentWeatherFromDataBase().retry(RETRY_COUNT, ::retryPredicate)
+            )
+        } else {
+            return null
+        }
+    }
 
     private fun retryPredicate(t: Throwable) = t is HttpException
 
-    override fun getFutureWeather(location: LocationProvider): Observable<FutureWeather>? =
-        Observable.mergeDelayError(location.getUserLastLocation()?.flatMap { userLocation: Location ->
-            getFutureWeatherFromApi(userLocation)
-        }?.subscribeOn(getWorkerScheduler()), getFutureWeatherFromDatabase()).retry(RETRY_COUNT, ::retryPredicate)
+    override fun getFutureWeather(location: LocationProvider): Observable<FutureWeather>? {
+        if (location.hasLocationPermission()) {
+            return Observable.mergeDelayError(location.getUserLastLocation()?.flatMap { userLocation: Location ->
+                getFutureWeatherFromApi(userLocation)
+            }?.subscribeOn(getWorkerScheduler()), getFutureWeatherFromDatabase()).retry(RETRY_COUNT, ::retryPredicate)
+        } else {
+            return null
+        }
+    }
 
     private fun getFutureWeatherFromApi(location: Location): Observable<FutureWeather>? =
         apiWeatherInterface.getFutureWeather(location.latitude, location.longitude, DAYS)
