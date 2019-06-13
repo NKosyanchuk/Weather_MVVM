@@ -1,11 +1,13 @@
 package com.weather.weathermvvmapp.data.database
 
 import androidx.room.TypeConverter
-
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.weather.weathermvvmapp.data.database.FutureWeatherConverter.GsonProvider.listFromJson
+import com.weather.weathermvvmapp.data.database.FutureWeatherConverter.GsonProvider.listToJson
 import com.weather.weathermvvmapp.data.database.entity.FutureWeatherList
 import com.weather.weathermvvmapp.data.database.entity.Weather
+import java.lang.reflect.Type
 
 const val DATABASE_NAME = "weatherDatabase.db"
 
@@ -19,16 +21,15 @@ class WeatherConverter {
 
     @TypeConverter
     fun fromWeatherList(value: List<Weather>): String {
-        val gson = Gson()
         val type = object : TypeToken<List<Weather>>() {}.type
-        return gson.toJson(value, type)
+        return listToJson(value, type)
     }
 
     @TypeConverter
     fun toWeatherList(value: String): List<Weather> {
         val gson = Gson()
         val type = object : TypeToken<List<Weather>>() {}.type
-        return gson.fromJson(value, type)
+        return listFromJson(value, type)
     }
 }
 
@@ -37,13 +38,33 @@ class FutureWeatherConverter {
     fun fromFeatureWeatherList(value: List<FutureWeatherList>): String {
         val gson = Gson()
         val type = object : TypeToken<List<FutureWeatherList>>() {}.type
-        return gson.toJson(value, type)
+        return listToJson(value, type)
     }
 
     @TypeConverter
     fun toFeatureWeatherList(value: String): List<FutureWeatherList> {
         val gson = Gson()
         val type = object : TypeToken<List<FutureWeatherList>>() {}.type
-        return gson.fromJson(value, type)
+        return listFromJson(value, type)
+    }
+
+    object GsonProvider {
+        private var gson: Gson? = null
+
+        private fun getGson(): Gson {
+            if (gson == null) {
+                gson = Gson()
+                return gson as Gson
+            }
+            return gson as Gson
+        }
+
+        fun <E> listFromJson(o: String, listType: Type): List<E> {
+            return getGson().fromJson(o, listType)
+        }
+
+        fun <T> listToJson(list: List<T>, listType: Type): String {
+            return getGson().toJson(list, listType)
+        }
     }
 }
