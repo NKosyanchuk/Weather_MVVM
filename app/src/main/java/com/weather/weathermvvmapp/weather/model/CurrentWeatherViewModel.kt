@@ -25,9 +25,8 @@ class CurrentWeatherViewModel(
         fetchData()
     }
 
-    override fun createDataObservable(): Observable<CurrentWeather>? {
-        return weatherRepositoryProvider.getCurrentWeather(locationProvider)
-    }
+    override fun createDataObservable(): Observable<CurrentWeather>? =
+        weatherRepositoryProvider.getCurrentWeather(locationProvider)
 
     companion object {
         fun getInstance(fragment: Fragment): CurrentWeatherViewModel {

@@ -24,12 +24,11 @@ class FutureWeatherViewModel(
         fetchData()
     }
 
-    override fun createDataObservable(): Observable<FutureWeather>? {
-       return weatherRepositoryProvider.getFutureWeather(locationProvider)
-    }
+    override fun createDataObservable(): Observable<FutureWeather>? =
+        weatherRepositoryProvider.getFutureWeather(locationProvider)
 
     companion object {
-         fun getInstance(fragment: Fragment): FutureWeatherViewModel {
+        fun getInstance(fragment: Fragment): FutureWeatherViewModel {
             return ViewModelProviders.of(fragment, object : ViewModelProvider.Factory {
                 override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                     val weatherRepositoryProvider = WeatherRepositoryProvider(

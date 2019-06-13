@@ -34,47 +34,38 @@ class WeatherRepositoryProvider(
 
     override fun getResultScheduler(): Scheduler = AndroidSchedulers.mainThread()
 
-    private fun getCurrentWeatherFromApi(location: Location): Observable<CurrentWeather> {
-        return apiWeatherInterface.getCurrentWeather(location.latitude, location.longitude)
+    private fun getCurrentWeatherFromApi(location: Location): Observable<CurrentWeather> =
+        apiWeatherInterface.getCurrentWeather(location.latitude, location.longitude)
             .doOnNext { t: CurrentWeather? ->
                 t?.let { weatherDatabase.currentWeatherDao().insert(it) }
             }
             .subscribeOn(getWorkerScheduler())
-    }
 
-    private fun getCurrentWeatherFromDataBase(): Observable<CurrentWeather>? {
-        return weatherDatabase.currentWeatherDao().getCurrentWeather()
+    private fun getCurrentWeatherFromDataBase(): Observable<CurrentWeather> =
+        weatherDatabase.currentWeatherDao().getCurrentWeather()
             .subscribeOn(getWorkerScheduler())
-    }
 
-    override fun getCurrentWeather(location: LocationProvider): Observable<CurrentWeather>? {
-        return Observable.mergeDelayError(
+    override fun getCurrentWeather(location: LocationProvider): Observable<CurrentWeather>? =
+        Observable.mergeDelayError(
             location.getUserLastLocation()
                 ?.flatMap { userLocation: Location ->
                     getCurrentWeatherFromApi(userLocation)
-                }?.subscribeOn(getWorkerScheduler()), getCurrentWeatherFromDataBase()
-                ?.retry(RETRY_COUNT, ::retryPredicate)
+                }?.subscribeOn(getWorkerScheduler()),
+            getCurrentWeatherFromDataBase().retry(RETRY_COUNT, ::retryPredicate)
         )
-    }
 
-    private fun retryPredicate(t: Throwable): Boolean {
-        return t is HttpException
-    }
+    private fun retryPredicate(t: Throwable) = t is HttpException
 
-    override fun getFutureWeather(location: LocationProvider): Observable<FutureWeather>? {
-        return Observable.mergeDelayError(location.getUserLastLocation()?.flatMap { userLocation: Location ->
+    override fun getFutureWeather(location: LocationProvider): Observable<FutureWeather>? =
+        Observable.mergeDelayError(location.getUserLastLocation()?.flatMap { userLocation: Location ->
             getFutureWeatherFromApi(userLocation)
         }?.subscribeOn(getWorkerScheduler()), getFutureWeatherFromDatabase()).retry(RETRY_COUNT, ::retryPredicate)
-    }
 
-    private fun getFutureWeatherFromApi(location: Location): Observable<FutureWeather>? {
-        return apiWeatherInterface.getFutureWeather(location.latitude, location.longitude, DAYS)
+    private fun getFutureWeatherFromApi(location: Location): Observable<FutureWeather>? =
+        apiWeatherInterface.getFutureWeather(location.latitude, location.longitude, DAYS)
             .doOnNext { t: FutureWeather? -> t?.let { weatherDatabase.futureWeatherDao().insert(it) } }
             .subscribeOn(getWorkerScheduler())
-    }
 
-    private fun getFutureWeatherFromDatabase(): Observable<FutureWeather> {
-        return weatherDatabase.futureWeatherDao().getFutureWeather()
-            .subscribeOn(getWorkerScheduler())
-    }
+    private fun getFutureWeatherFromDatabase() = weatherDatabase.futureWeatherDao().getFutureWeather()
+        .subscribeOn(getWorkerScheduler())
 }
