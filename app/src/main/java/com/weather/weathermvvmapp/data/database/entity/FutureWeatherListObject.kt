@@ -21,5 +21,5 @@ data class FutureWeatherListObject(
     @SerializedName("temp")
     val temp: Temp,
     @SerializedName("weather")
-    val weather: List<Weather>
+    val weather: ArrayList<Weather>
 )

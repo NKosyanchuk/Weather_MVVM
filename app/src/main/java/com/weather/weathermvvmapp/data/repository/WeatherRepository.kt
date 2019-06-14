@@ -90,7 +90,7 @@ class WeatherRepositoryProvider(
     override fun getFutureWeatherByDate(dateInMills: Long): Observable<FutureWeatherListObject?> {
         return getFutureWeatherFromDatabase()
             .flatMap { t: FutureWeather ->
-                Observable.just(t.list)
+                Observable.just(t.listWeather)
             }
             .flatMap {
                 Observable.just(foundItem(it, dateInMills))

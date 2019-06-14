@@ -3,7 +3,7 @@ package com.weather.weathermvvmapp.extensions
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.example.weathermvvmapp.R
+import com.weather.weathermvvmapp.R
 import java.text.SimpleDateFormat
 import java.util.*
 

@@ -27,7 +27,6 @@ class WeatherConverter {
 
     @TypeConverter
     fun toWeatherList(value: String): List<Weather> {
-        val gson = Gson()
         val type = object : TypeToken<List<Weather>>() {}.type
         return listFromJson(value, type)
     }
@@ -36,14 +35,12 @@ class WeatherConverter {
 class FutureWeatherConverter {
     @TypeConverter
     fun fromFeatureWeatherList(value: List<FutureWeatherListObject>): String {
-        val gson = Gson()
         val type = object : TypeToken<List<FutureWeatherListObject>>() {}.type
         return listToJson(value, type)
     }
 
     @TypeConverter
     fun toFeatureWeatherList(value: String): List<FutureWeatherListObject> {
-        val gson = Gson()
         val type = object : TypeToken<List<FutureWeatherListObject>>() {}.type
         return listFromJson(value, type)
     }

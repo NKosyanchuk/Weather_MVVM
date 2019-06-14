@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.squareup.picasso.Picasso
+import com.weather.weathermvvmapp.R
 import com.weather.weathermvvmapp.data.database.current_db.CurrentWeather
+import com.weather.weathermvvmapp.data.database.entity.Weather
 import com.weather.weathermvvmapp.data.network.WEATHER_ICON_URL
 import com.weather.weathermvvmapp.extensions.showToast
 import com.weather.weathermvvmapp.weather.model.CurrentWeatherViewModel
@@ -28,7 +30,7 @@ class CurrentWeatherFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(com.example.weathermvvmapp.R.layout.current_weather_fragment, container, false)
+        return inflater.inflate(R.layout.current_weather_fragment, container, false)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,18 +58,18 @@ class CurrentWeatherFragment : Fragment() {
     }
 
     private fun showCurrentWeather(currentWeather: CurrentWeather) {
-        val weather = currentWeather.weather[0]
-        val temperatureObject = currentWeather.main
-        descriptionTv.text = weather.description
-        temperatureTv.text = temperatureObject.temp.toString()
-        minTemperatureTv.text = temperatureObject.tempMin.toString()
-        maxTemperatureTv.text = temperatureObject.tempMax.toString()
-        setupWeatherIcon(currentWeather)
+            val weather = currentWeather.weather[0]
+            val temperatureObject = currentWeather.main
+            descriptionTv.text = weather.description
+            temperatureTv.text = temperatureObject.temp.toString()
+            minTemperatureTv.text = temperatureObject.tempMin.toString()
+            maxTemperatureTv.text = temperatureObject.tempMax.toString()
+            setupWeatherIcon(weather)
     }
 
-    private fun setupWeatherIcon(currentWeather: CurrentWeather) {
+    private fun setupWeatherIcon(currentWeather: Weather) {
         //https//openweathermap.org/img/w/03d.png
-        val iconURL = WEATHER_ICON_URL + currentWeather.weather[0].icon + ".png"
+        val iconURL = WEATHER_ICON_URL + currentWeather.icon + ".png"
         Picasso.get()
             .load(iconURL)
             .into(weatherIv)

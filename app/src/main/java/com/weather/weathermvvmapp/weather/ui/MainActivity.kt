@@ -6,11 +6,11 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.weathermvvmapp.R
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.weather.weathermvvmapp.R
 import com.weather.weathermvvmapp.extensions.loadFragment
 import com.weather.weathermvvmapp.extensions.showToast
 import com.weather.weathermvvmapp.weather.LifecycleBoundLocationManager

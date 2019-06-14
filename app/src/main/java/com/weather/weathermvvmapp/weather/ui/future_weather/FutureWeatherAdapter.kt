@@ -3,13 +3,13 @@ package com.weather.weathermvvmapp.weather.ui.future_weather
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.weathermvvmapp.R
+import com.weather.weathermvvmapp.R
 import com.weather.weathermvvmapp.data.database.entity.FutureWeatherListObject
 
 class FutureWeatherAdapter(private val futureWeatherClickListener: FutureWeatherClickListener) :
     RecyclerView.Adapter<FutureWeatherHolder>() {
 
-    private var futureWeatherList: ArrayList<FutureWeatherListObject> = arrayListOf()
+    private var futureWeatherList: List<FutureWeatherListObject> = listOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FutureWeatherHolder {
         val itemView = LayoutInflater.from(parent.context)
@@ -28,7 +28,7 @@ class FutureWeatherAdapter(private val futureWeatherClickListener: FutureWeather
         }
     }
 
-    fun updateWeather(futureWeatherList: ArrayList<FutureWeatherListObject>) {
+    fun updateWeather(futureWeatherList: List<FutureWeatherListObject>) {
         this.futureWeatherList = futureWeatherList
         notifyDataSetChanged()
     }
