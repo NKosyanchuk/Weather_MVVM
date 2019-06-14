@@ -27,3 +27,10 @@ fun getDateFromString(mills: Long): String {
     calendar.timeInMillis = mills
     return formatter.format(calendar.time)
 }
+
+fun Fragment.replaceFragment(newFragment: Fragment) {
+    this.fragmentManager?.beginTransaction()
+        ?.replace(R.id.container, newFragment)
+        ?.addToBackStack(null)
+        ?.commit()
+}

@@ -23,7 +23,7 @@ class FutureWeatherAdapter(private val futureWeatherClickListener: FutureWeather
         holder.bindUI(futureWeatherList[position])
         holder.itemView.setOnClickListener {
             if (holder.adapterPosition != RecyclerView.NO_POSITION) {
-                futureWeatherClickListener.invoke(futureWeatherList[holder.adapterPosition].dt) //date in mills
+                futureWeatherClickListener.invoke(futureWeatherList[holder.adapterPosition]) //date in mills
             }
         }
     }
@@ -34,4 +34,4 @@ class FutureWeatherAdapter(private val futureWeatherClickListener: FutureWeather
     }
 }
 
-typealias FutureWeatherClickListener = (Long) -> Unit
+typealias FutureWeatherClickListener = (FutureWeatherListObject) -> Unit

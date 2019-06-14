@@ -1,7 +1,6 @@
 package com.weather.weathermvvmapp.weather.ui.future_weather
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,9 +8,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.weather.weathermvvmapp.R
+import com.weather.weathermvvmapp.data.database.entity.FutureWeatherListObject
 import com.weather.weathermvvmapp.data.database.future_db.FutureWeather
+import com.weather.weathermvvmapp.extensions.replaceFragment
 import com.weather.weathermvvmapp.extensions.showToast
 import com.weather.weathermvvmapp.weather.model.FutureWeatherViewModel
+import com.weather.weathermvvmapp.weather.ui.detailed_weather.DetailedWeatherFragment
 import kotlinx.android.synthetic.main.future_weather_fragment.*
 
 class FutureWeatherFragment : Fragment() {
@@ -66,8 +68,9 @@ class FutureWeatherFragment : Fragment() {
         }
     }
 
-    private fun showDetailedWeather(futureWeatherObjectDate: Long) {
-        Log.d("Test", futureWeatherObjectDate.toString())
+    private fun showDetailedWeather(futureWeatherListObject: FutureWeatherListObject) {
+        val detailedWeatherFragment = DetailedWeatherFragment.newInstance(futureWeatherListObject)
+        replaceFragment(detailedWeatherFragment)
     }
 
     private fun showProgress(progress: Boolean) {
@@ -78,9 +81,7 @@ class FutureWeatherFragment : Fragment() {
         }
     }
 
-
     private fun showFutureWeather(futureWeather: FutureWeather) {
-        if (futureWeather.listWeather != null)
-            futureWeatherAdapter.updateWeather(futureWeather.listWeather)
+        futureWeatherAdapter.updateWeather(futureWeather.listWeather)
     }
 }

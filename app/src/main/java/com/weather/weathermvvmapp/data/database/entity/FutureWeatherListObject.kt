@@ -1,8 +1,11 @@
 package com.weather.weathermvvmapp.data.database.entity
 
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class FutureWeatherListObject(
     @SerializedName("clouds")
     val clouds: Int,
@@ -22,4 +25,4 @@ data class FutureWeatherListObject(
     val temp: Temp,
     @SerializedName("weather")
     val weather: ArrayList<Weather>
-)
+) : Parcelable
