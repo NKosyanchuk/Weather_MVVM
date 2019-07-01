@@ -5,7 +5,7 @@ import androidx.lifecycle.*
 import com.weather.weathermvvmapp.data.database.entity.FutureWeatherListObject
 
 class DetailedWeatherViewModel(
-    private val futureWeatherListObject: FutureWeatherListObject?
+    futureWeatherListObject: FutureWeatherListObject?
 ) : ViewModel() {
 
     private var detailWeatherMutable: MutableLiveData<FutureWeatherListObject> = MutableLiveData()

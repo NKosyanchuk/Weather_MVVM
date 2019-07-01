@@ -4,4 +4,9 @@
     <string name="feature_weather">Feature weather</string>
     <string name="map">Map</string>
     <string name="loading">Loading</string>
+    <string name="tempFormat">%1$s°C - %2$s°C</string>
+    <string name="celsiusSign">°C</string>
+    <string name="minTemp">Min temp: </string>
+    <string name="maxTemp">Max temp: </string>
+    <string name="wind">Wind: %1$s m/s</string>
 </resources>

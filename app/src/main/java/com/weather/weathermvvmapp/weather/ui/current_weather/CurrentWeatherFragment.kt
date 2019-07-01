@@ -11,6 +11,7 @@ import com.weather.weathermvvmapp.R
 import com.weather.weathermvvmapp.data.database.current_db.CurrentWeather
 import com.weather.weathermvvmapp.data.database.entity.Weather
 import com.weather.weathermvvmapp.data.network.WEATHER_ICON_URL
+import com.weather.weathermvvmapp.extensions.roundDoubleToString
 import com.weather.weathermvvmapp.extensions.showToast
 import com.weather.weathermvvmapp.weather.model.CurrentWeatherViewModel
 
@@ -58,13 +59,14 @@ class CurrentWeatherFragment : Fragment() {
     }
 
     private fun showCurrentWeather(currentWeather: CurrentWeather) {
-            val weather = currentWeather.weather[0]
-            val temperatureObject = currentWeather.main
-            descriptionTv.text = weather.description
-            temperatureTv.text = temperatureObject.temp.toString()
-            minTemperatureTv.text = temperatureObject.tempMin.toString()
-            maxTemperatureTv.text = temperatureObject.tempMax.toString()
-            setupWeatherIcon(weather)
+        val weather = currentWeather.weather[0]
+        val temperatureObject = currentWeather.main
+        descriptionTv.text = weather.description
+        temperatureTv.text = formatTemperatureStringWithSign(temperatureObject.temp)
+        minTemperatureTv.text = formatTemperatureString(temperatureObject.tempMin, true)
+        maxTemperatureTv.text = formatTemperatureString(temperatureObject.tempMax, false)
+        windTv.text = requireContext().getString(R.string.wind, currentWeather.wind.speed.toString())
+        setupWeatherIcon(weather)
     }
 
     private fun setupWeatherIcon(currentWeather: Weather) {
@@ -73,6 +75,18 @@ class CurrentWeatherFragment : Fragment() {
         Picasso.get()
             .load(iconURL)
             .into(weatherIv)
+    }
+
+    private fun formatTemperatureString(temperatureDouble: Double, isMin: Boolean): String {
+        return if (isMin) {
+            getString(R.string.minTemp) + formatTemperatureStringWithSign(temperatureDouble)
+        } else {
+            getString(R.string.maxTemp) + formatTemperatureStringWithSign(temperatureDouble)
+        }
+    }
+
+    private fun formatTemperatureStringWithSign(temperatureDouble: Double): String {
+        return temperatureDouble.roundDoubleToString() + requireContext().getString(R.string.celsiusSign)
     }
 
     private fun showProgress(progress: Boolean) {

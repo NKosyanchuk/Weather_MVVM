@@ -1,8 +1,9 @@
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                   xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                   xmlns:tools="http://schemas.android.com/tools"
-                                                   android:layout_width="match_parent"
-                                                   android:layout_height="match_parent">
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
 
     <TextView
@@ -10,33 +11,27 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Headline2"
             app:layout_constraintBottom_toBottomOf="@+id/weatherIv"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/weatherIv"
-            app:layout_constraintVertical_bias="1.0"
             tools:text="25.0°C"/>
 
     <ImageView
             android:id="@+id/weatherIv"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.889"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.234"
             app:layout_constraintWidth_percent="0.25"
-            tools:src="@drawable/ic_feature_weather"/>
+            tools:src="@drawable/ic_feature_weather" app:layout_constraintStart_toEndOf="@+id/temperatureTv"
+            android:layout_marginStart="8dp"/>
 
     <TextView
             android:id="@+id/minTemperatureTv"
