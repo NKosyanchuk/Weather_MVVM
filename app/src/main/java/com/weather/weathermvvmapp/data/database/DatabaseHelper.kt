@@ -5,8 +5,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.weather.weathermvvmapp.data.database.FutureWeatherConverter.GsonProvider.listFromJson
 import com.weather.weathermvvmapp.data.database.FutureWeatherConverter.GsonProvider.listToJson
-import com.weather.weathermvvmapp.data.database.entity.FutureWeatherListObject
-import com.weather.weathermvvmapp.data.database.entity.Weather
+import com.weather.weathermvvmapp.data.database.future_db.FutureWeatherListObjectModel
+import com.weather.weathermvvmapp.data.network.response.Weather
 import java.lang.reflect.Type
 
 const val DATABASE_NAME = "weatherDatabase.db"
@@ -34,14 +34,14 @@ class WeatherConverter {
 
 class FutureWeatherConverter {
     @TypeConverter
-    fun fromFeatureWeatherList(value: List<FutureWeatherListObject>): String {
-        val type = object : TypeToken<List<FutureWeatherListObject>>() {}.type
+    fun fromFeatureWeatherList(value: List<FutureWeatherListObjectModel>): String {
+        val type = object : TypeToken<List<FutureWeatherListObjectModel>>() {}.type
         return listToJson(value, type)
     }
 
     @TypeConverter
-    fun toFeatureWeatherList(value: String): List<FutureWeatherListObject> {
-        val type = object : TypeToken<List<FutureWeatherListObject>>() {}.type
+    fun toFeatureWeatherList(value: String): List<FutureWeatherListObjectModel> {
+        val type = object : TypeToken<List<FutureWeatherListObjectModel>>() {}.type
         return listFromJson(value, type)
     }
 

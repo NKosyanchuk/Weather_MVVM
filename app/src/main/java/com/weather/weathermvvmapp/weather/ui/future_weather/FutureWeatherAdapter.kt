@@ -4,12 +4,12 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.weather.weathermvvmapp.R
-import com.weather.weathermvvmapp.data.database.entity.FutureWeatherListObject
+import com.weather.weathermvvmapp.data.database.future_db.FutureWeatherListObjectModel
 
 class FutureWeatherAdapter(private val futureWeatherClickListener: FutureWeatherClickListener) :
     RecyclerView.Adapter<FutureWeatherHolder>() {
 
-    private var futureWeatherList: List<FutureWeatherListObject> = listOf()
+    private var futureWeatherList: List<FutureWeatherListObjectModel> = listOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FutureWeatherHolder {
         val itemView = LayoutInflater.from(parent.context)
@@ -28,10 +28,10 @@ class FutureWeatherAdapter(private val futureWeatherClickListener: FutureWeather
         }
     }
 
-    fun updateWeather(futureWeatherList: List<FutureWeatherListObject>) {
+    fun updateWeather(futureWeatherList: List<FutureWeatherListObjectModel>) {
         this.futureWeatherList = futureWeatherList
         notifyDataSetChanged()
     }
 }
 
-typealias FutureWeatherClickListener = (FutureWeatherListObject) -> Unit
+typealias FutureWeatherClickListener = (FutureWeatherListObjectModel) -> Unit

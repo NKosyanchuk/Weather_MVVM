@@ -8,8 +8,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.weather.weathermvvmapp.R
-import com.weather.weathermvvmapp.data.database.entity.FutureWeatherListObject
-import com.weather.weathermvvmapp.data.database.future_db.FutureWeather
+import com.weather.weathermvvmapp.data.database.future_db.FutureWeatherModel
+import com.weather.weathermvvmapp.data.network.response.FutureWeatherListObject
 import com.weather.weathermvvmapp.extensions.replaceFragment
 import com.weather.weathermvvmapp.extensions.showToast
 import com.weather.weathermvvmapp.weather.model.FutureWeatherViewModel
@@ -60,7 +60,7 @@ class FutureWeatherFragment : Fragment() {
 
     private fun initFutureWeatherListView() {
         futureWeatherAdapter = FutureWeatherAdapter { futureWeatherObjectDate ->
-            showDetailedWeather(futureWeatherObjectDate)
+            //            showDetailedWeather(futureWeatherObjectDate)
         }
         futureWeatherRv.apply {
             adapter = futureWeatherAdapter
@@ -81,7 +81,7 @@ class FutureWeatherFragment : Fragment() {
         }
     }
 
-    private fun showFutureWeather(futureWeather: FutureWeather) {
-        futureWeatherAdapter.updateWeather(futureWeather.listWeather)
+    private fun showFutureWeather(futureWeather: FutureWeatherModel) {
+        futureWeather.listWeather?.let { futureWeatherAdapter.updateWeather(it) }
     }
 }

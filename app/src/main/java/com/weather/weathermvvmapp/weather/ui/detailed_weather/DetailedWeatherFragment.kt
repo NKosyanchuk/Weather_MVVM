@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.squareup.picasso.Picasso
 import com.weather.weathermvvmapp.R
-import com.weather.weathermvvmapp.data.database.entity.FutureWeatherListObject
+import com.weather.weathermvvmapp.data.network.response.FutureWeatherListObject
 import com.weather.weathermvvmapp.data.network.WEATHER_ICON_URL
 import com.weather.weathermvvmapp.extensions.roundDoubleToString
 import com.weather.weathermvvmapp.weather.model.DetailedWeatherViewModel

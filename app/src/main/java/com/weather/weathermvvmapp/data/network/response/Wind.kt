@@ -1,4 +1,4 @@
-package com.weather.weathermvvmapp.data.database.entity
+package com.weather.weathermvvmapp.data.network.response
 
 
 import com.google.gson.annotations.SerializedName

@@ -1,8 +1,8 @@
 package com.weather.weathermvvmapp.data.network
 
 
-import com.weather.weathermvvmapp.data.database.current_db.CurrentWeather
-import com.weather.weathermvvmapp.data.database.future_db.FutureWeather
+import com.weather.weathermvvmapp.data.network.response.CurrentWeather
+import com.weather.weathermvvmapp.data.network.response.FutureWeather
 import io.reactivex.Observable
 import retrofit2.http.GET
 import retrofit2.http.Query

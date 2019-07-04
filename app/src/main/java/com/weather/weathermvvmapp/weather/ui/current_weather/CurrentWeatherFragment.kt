@@ -8,8 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.squareup.picasso.Picasso
 import com.weather.weathermvvmapp.R
-import com.weather.weathermvvmapp.data.database.current_db.CurrentWeather
-import com.weather.weathermvvmapp.data.database.entity.Weather
+import com.weather.weathermvvmapp.data.database.current_db.CurrentWeatherModel
 import com.weather.weathermvvmapp.data.network.WEATHER_ICON_URL
 import com.weather.weathermvvmapp.extensions.roundDoubleToString
 import com.weather.weathermvvmapp.extensions.showToast
@@ -58,20 +57,18 @@ class CurrentWeatherFragment : Fragment() {
         })
     }
 
-    private fun showCurrentWeather(currentWeather: CurrentWeather) {
-        val weather = currentWeather.weather[0]
-        val temperatureObject = currentWeather.main
-        descriptionTv.text = weather.description
-        temperatureTv.text = formatTemperatureStringWithSign(temperatureObject.temp)
-        minTemperatureTv.text = formatTemperatureString(temperatureObject.tempMin, true)
-        maxTemperatureTv.text = formatTemperatureString(temperatureObject.tempMax, false)
-        windTv.text = requireContext().getString(R.string.wind, currentWeather.wind.speed.toString())
-        setupWeatherIcon(weather)
+    private fun showCurrentWeather(currentWeatherModel: CurrentWeatherModel) {
+        descriptionTv.text = currentWeatherModel.description
+        temperatureTv.text = formatTemperatureStringWithSign(currentWeatherModel.temp)
+        minTemperatureTv.text = formatTemperatureString(currentWeatherModel.tempMin, true)
+        maxTemperatureTv.text = formatTemperatureString(currentWeatherModel.tempMax, false)
+        windTv.text = requireContext().getString(R.string.wind, currentWeatherModel.windSpeed.toString())
+        setupWeatherIcon(currentWeatherModel.icon)
     }
 
-    private fun setupWeatherIcon(currentWeather: Weather) {
+    private fun setupWeatherIcon(currentWeatherIconURL: String) {
         //https//openweathermap.org/img/w/03d.png
-        val iconURL = WEATHER_ICON_URL + currentWeather.icon + ".png"
+        val iconURL = "$WEATHER_ICON_URL$currentWeatherIconURL.png"
         Picasso.get()
             .load(iconURL)
             .into(weatherIv)

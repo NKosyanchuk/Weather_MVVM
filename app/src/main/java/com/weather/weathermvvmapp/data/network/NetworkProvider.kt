@@ -1,5 +1,7 @@
 package com.weather.weathermvvmapp.data.network
 
+import android.content.Context
+import android.net.ConnectivityManager
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -41,4 +43,13 @@ fun createApiInterface(): ApiWeatherInterface {
         .client(okClient)
         .build()
     return retrofit.create(ApiWeatherInterface::class.java)
+}
+
+fun isDeviceOnline(context: Context?): Boolean {
+    val connectivityManager = context?.getSystemService(
+        Context
+            .CONNECTIVITY_SERVICE
+    ) as ConnectivityManager
+    val networkInfo = connectivityManager.activeNetworkInfo
+    return networkInfo != null && networkInfo.isConnectedOrConnecting
 }

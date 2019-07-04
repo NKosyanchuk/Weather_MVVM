@@ -5,18 +5,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.weather.weathermvvmapp.data.database.WeatherDatabase
-import com.weather.weathermvvmapp.data.database.current_db.CurrentWeather
+import com.weather.weathermvvmapp.data.database.current_db.CurrentWeatherModel
 import com.weather.weathermvvmapp.data.network.createApiInterface
 import com.weather.weathermvvmapp.data.repository.LocationProvider
 import com.weather.weathermvvmapp.data.repository.WeatherRepositoryProvider
 import com.weather.weathermvvmapp.weather.BaseWeatherViewModel
-
 import io.reactivex.Observable
 
 class CurrentWeatherViewModel(
     private val weatherRepositoryProvider: WeatherRepositoryProvider,
     private val locationProvider: LocationProvider
-) : BaseWeatherViewModel<CurrentWeather>(
+) : BaseWeatherViewModel<CurrentWeatherModel>(
     weatherRepositoryProvider.getWorkerScheduler(),
     weatherRepositoryProvider.getResultScheduler()
 ) {
@@ -25,7 +24,7 @@ class CurrentWeatherViewModel(
         fetchData()
     }
 
-    override fun createDataObservable(): Observable<CurrentWeather>? =
+    override fun createDataObservable(): Observable<CurrentWeatherModel>? =
         weatherRepositoryProvider.getCurrentWeather(locationProvider)
 
     companion object {
@@ -34,7 +33,8 @@ class CurrentWeatherViewModel(
                 override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                     val weatherRepositoryProvider = WeatherRepositoryProvider(
                         createApiInterface(),
-                        WeatherDatabase.invoke(fragment.requireContext())
+                        WeatherDatabase.invoke(fragment.requireContext()),
+                        fragment.requireContext()
                     )
 
                     val locationProvider = LocationProvider(fragment.requireContext().applicationContext)

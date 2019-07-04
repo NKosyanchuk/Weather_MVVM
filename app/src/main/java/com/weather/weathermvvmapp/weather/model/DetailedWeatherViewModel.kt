@@ -2,7 +2,7 @@ package com.weather.weathermvvmapp.weather.model
 
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
-import com.weather.weathermvvmapp.data.database.entity.FutureWeatherListObject
+import com.weather.weathermvvmapp.data.network.response.FutureWeatherListObject
 
 class DetailedWeatherViewModel(
     futureWeatherListObject: FutureWeatherListObject?

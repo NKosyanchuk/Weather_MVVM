@@ -4,7 +4,7 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import com.weather.weathermvvmapp.R
-import com.weather.weathermvvmapp.data.database.entity.FutureWeatherListObject
+import com.weather.weathermvvmapp.data.database.future_db.FutureWeatherListObjectModel
 import com.weather.weathermvvmapp.data.network.WEATHER_ICON_URL
 import com.weather.weathermvvmapp.extensions.getDateFromString
 import com.weather.weathermvvmapp.extensions.roundDoubleToString
@@ -14,30 +14,30 @@ import kotlinx.android.synthetic.main.item_future_weather_list.view.*
 
 class FutureWeatherHolder(override val containerView: View) : RecyclerView.ViewHolder(containerView), LayoutContainer {
 
-    private lateinit var futureWeatherListObject: FutureWeatherListObject
+    private lateinit var futureWeatherListObject: FutureWeatherListObjectModel
 
-    fun bindUI(futureWeatherListObject: FutureWeatherListObject) {
+    fun bindUI(futureWeatherListObject: FutureWeatherListObjectModel) {
         this.futureWeatherListObject = futureWeatherListObject
 
         containerView.dateTv.text = getDateFromString(futureWeatherListObject.dt * 1000)
         containerView.temperatureTv.text = getTemperatureString(futureWeatherListObject)
-        containerView.descriptionTv.text = futureWeatherListObject.weather[0].description
+        containerView.descriptionTv.text = futureWeatherListObject.description
         setupWeatherIcon(futureWeatherListObject)
     }
 
-    private fun setupWeatherIcon(futureWeatherListObject: FutureWeatherListObject) {
+    private fun setupWeatherIcon(futureWeatherListObjectModel: FutureWeatherListObjectModel) {
         //https//openweathermap.org/img/w/03d.png
-        val iconURL = WEATHER_ICON_URL + futureWeatherListObject.weather[0].icon + ".png"
+        val iconURL = WEATHER_ICON_URL + futureWeatherListObjectModel.icon + ".png"
         Picasso.get()
             .load(iconURL)
             .into(containerView.weatherIv)
     }
 
-    private fun getTemperatureString(futureWeatherListObject: FutureWeatherListObject): String {
+    private fun getTemperatureString(futureWeatherListObjectModel: FutureWeatherListObjectModel): String {
         return containerView.context.getString(
             R.string.tempFormat,
-            futureWeatherListObject.temp.min.roundDoubleToString(),
-            futureWeatherListObject.temp.max.roundDoubleToString()
+            futureWeatherListObjectModel.min.roundDoubleToString(),
+            futureWeatherListObjectModel.max.roundDoubleToString()
         )
     }
 }

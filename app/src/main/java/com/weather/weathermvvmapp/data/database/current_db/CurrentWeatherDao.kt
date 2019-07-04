@@ -12,8 +12,8 @@ import io.reactivex.Observable
 interface CurrentWeatherDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(weatherEntry: CurrentWeather)
+    fun insert(weatherEntry: CurrentWeatherModel)
 
     @Query("select * from $CURRENT_WEATHER_DATABASE_NAME where id = $CURRENT_WEATHER_ID")
-    fun getCurrentWeather(): Observable<CurrentWeather>
+    fun getCurrentWeather(): Observable<CurrentWeatherModel>
 }

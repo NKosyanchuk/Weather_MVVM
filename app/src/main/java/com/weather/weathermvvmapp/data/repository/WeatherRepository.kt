@@ -1,10 +1,16 @@
 package com.weather.weathermvvmapp.data.repository
 
+import android.content.Context
 import android.location.Location
 import com.weather.weathermvvmapp.data.database.WeatherDatabase
-import com.weather.weathermvvmapp.data.database.current_db.CurrentWeather
-import com.weather.weathermvvmapp.data.database.future_db.FutureWeather
+import com.weather.weathermvvmapp.data.database.current_db.CurrentWeatherModel
+import com.weather.weathermvvmapp.data.database.current_db.fromApiDataToModelWeather
+import com.weather.weathermvvmapp.data.database.future_db.FutureWeatherModel
+import com.weather.weathermvvmapp.data.database.future_db.fromApiDataToFutureWeatherModel
 import com.weather.weathermvvmapp.data.network.ApiWeatherInterface
+import com.weather.weathermvvmapp.data.network.isDeviceOnline
+import com.weather.weathermvvmapp.data.network.response.CurrentWeather
+import com.weather.weathermvvmapp.data.network.response.FutureWeather
 import io.reactivex.Observable
 import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -17,8 +23,8 @@ private const val DAYS = 10
 private const val TIMEOUT_INTERVAL = 15L
 
 interface WeatherRepository {
-    fun getCurrentWeather(location: LocationProvider): Observable<CurrentWeather>?
-    fun getFutureWeather(location: LocationProvider): Observable<FutureWeather>?
+    fun getCurrentWeather(location: LocationProvider): Observable<CurrentWeatherModel>?
+    fun getFutureWeather(location: LocationProvider): Observable<FutureWeatherModel>?
 }
 
 interface SchedulersRepository {
@@ -28,28 +34,32 @@ interface SchedulersRepository {
 
 class WeatherRepositoryProvider(
     private val apiWeatherInterface: ApiWeatherInterface,
-    private val weatherDatabase: WeatherDatabase
+    private val weatherDatabase: WeatherDatabase,
+    private val context: Context
 ) : WeatherRepository, SchedulersRepository {
 
     override fun getWorkerScheduler() = Schedulers.io()
 
     override fun getResultScheduler(): Scheduler = AndroidSchedulers.mainThread()
 
-    private fun getCurrentWeatherFromApi(location: Location): Observable<CurrentWeather> =
+    private fun getCurrentWeatherFromApi(location: Location): Observable<CurrentWeatherModel> =
         apiWeatherInterface.getCurrentWeather(location.latitude, location.longitude)
             .doOnNext { t: CurrentWeather? ->
-                t?.let { weatherDatabase.currentWeatherDao().insert(it) }
+                t?.let { weatherDatabase.currentWeatherDao().insert(it.fromApiDataToModelWeather()) }
+            }
+            .flatMap { t: CurrentWeather ->
+                Observable.just(t.fromApiDataToModelWeather())
             }
             .subscribeOn(getWorkerScheduler())
 
-    private fun getCurrentWeatherFromDataBase(): Observable<CurrentWeather> =
+    private fun getCurrentWeatherFromDataBase(): Observable<CurrentWeatherModel> =
         weatherDatabase.currentWeatherDao().getCurrentWeather()
-            .takeUntil(Observable.timer(10, java.util.concurrent.TimeUnit.SECONDS))
+            .takeUntil(Observable.timer(TIMEOUT_INTERVAL, java.util.concurrent.TimeUnit.SECONDS))
             .subscribeOn(getWorkerScheduler())
 
-    override fun getCurrentWeather(location: LocationProvider): Observable<CurrentWeather>? {
-        if (location.hasLocationPermission()) {
-            return Observable.mergeDelayError(
+    override fun getCurrentWeather(location: LocationProvider): Observable<CurrentWeatherModel>? {
+        return if (location.hasLocationPermission() && isDeviceOnline(context)) {
+            Observable.mergeDelayError(
                 location.getUserLastLocation()
                     ?.flatMap { userLocation: Location ->
                         getCurrentWeatherFromApi(userLocation)
@@ -58,26 +68,36 @@ class WeatherRepositoryProvider(
                     .timeout(TIMEOUT_INTERVAL, java.util.concurrent.TimeUnit.SECONDS)
             )
         } else {
-            return null
+            return getCurrentWeatherFromDataBase()
         }
     }
 
     private fun retryPredicate(t: Throwable) = t is HttpException
 
-    override fun getFutureWeather(location: LocationProvider): Observable<FutureWeather>? {
-        if (location.hasLocationPermission()) {
-            return Observable.mergeDelayError(location.getUserLastLocation()?.flatMap { userLocation: Location ->
-                getFutureWeatherFromApi(userLocation)
-            }?.subscribeOn(getWorkerScheduler()), getFutureWeatherFromDatabase()).retry(RETRY_COUNT, ::retryPredicate)
+    override fun getFutureWeather(location: LocationProvider): Observable<FutureWeatherModel>? {
+        return if (location.hasLocationPermission() && isDeviceOnline(context)) {
+            Observable.mergeDelayError(location.getUserLastLocation()
+                ?.flatMap { userLocation: Location ->
+                    getFutureWeatherFromApi(userLocation)
+                }
+                ?.subscribeOn(getWorkerScheduler()), getFutureWeatherFromDatabase())
+                .retry(RETRY_COUNT, ::retryPredicate)
                 .timeout(TIMEOUT_INTERVAL, java.util.concurrent.TimeUnit.SECONDS)
         } else {
-            return null
+            return getFutureWeatherFromDatabase()
         }
     }
 
-    private fun getFutureWeatherFromApi(location: Location): Observable<FutureWeather>? =
+    private fun getFutureWeatherFromApi(location: Location): Observable<FutureWeatherModel>? =
         apiWeatherInterface.getFutureWeather(location.latitude, location.longitude, DAYS)
-            .doOnNext { t: FutureWeather? -> t?.let { weatherDatabase.futureWeatherDao().insert(it) } }
+            .doOnNext { t: FutureWeather? ->
+                t?.let {
+                    weatherDatabase.futureWeatherDao().insert(it.fromApiDataToFutureWeatherModel())
+                }
+            }
+            .flatMap { t: FutureWeather ->
+                Observable.just(t.fromApiDataToFutureWeatherModel())
+            }
             .timeout(TIMEOUT_INTERVAL, java.util.concurrent.TimeUnit.SECONDS)
             .subscribeOn(getWorkerScheduler())
 
