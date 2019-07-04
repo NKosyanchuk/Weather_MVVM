@@ -56,6 +56,10 @@ class FutureWeatherFragment : Fragment() {
                 else -> showFutureWeather(viewObject.data)
             }
         })
+
+        swipeToRefresh.setOnRefreshListener {
+            futureWeatherViewModel.refreshData()
+        }
     }
 
     private fun initFutureWeatherListView() {
@@ -78,6 +82,7 @@ class FutureWeatherFragment : Fragment() {
             loadingGroup.visibility = View.VISIBLE
         } else {
             loadingGroup.visibility = View.GONE
+            swipeToRefresh.isRefreshing = false
         }
     }
 

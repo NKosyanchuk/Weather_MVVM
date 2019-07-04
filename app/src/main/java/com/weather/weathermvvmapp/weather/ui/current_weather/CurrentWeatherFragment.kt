@@ -55,6 +55,10 @@ class CurrentWeatherFragment : Fragment() {
                 else -> showCurrentWeather(viewObject.data)
             }
         })
+
+        swipeToRefresh.setOnRefreshListener {
+            currentWeatherViewModel.refreshData()
+        }
     }
 
     private fun showCurrentWeather(currentWeatherModel: CurrentWeatherModel) {
@@ -91,6 +95,7 @@ class CurrentWeatherFragment : Fragment() {
             loadingGroup.visibility = View.VISIBLE
         } else {
             loadingGroup.visibility = View.GONE
+            swipeToRefresh.isRefreshing = false
         }
     }
 }

@@ -35,6 +35,10 @@ abstract class BaseWeatherViewModel<T>(
 
     fun liveData(): LiveData<ViewObject<T>> = mutableLiveData
 
+    fun refreshData() {
+        fetchData()
+    }
+
     protected fun fetchData() {
         val currentData = mutableLiveData.value
         if (currentData?.progress == true) {
