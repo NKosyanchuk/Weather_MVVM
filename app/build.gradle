@@ -6,7 +6,7 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.weatherList.weathermvvmapp"
+        applicationId "com.weather.weathermvvmapp"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
@@ -57,7 +57,7 @@ dependencies {
     kapt "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
 
     // WeatherLocation
-    implementation "com.google.android.gms:play-services-location:16.0.0"
+    implementation "com.google.android.gms:play-services-location:17.0.0"
     implementation 'pl.charmas.android:android-reactive-location2:2.1@aar'
 
     // New Material Design
@@ -66,8 +66,17 @@ dependencies {
     //Picasso
     implementation 'com.squareup.picasso:picasso:2.71828'
 
-    // Test
+    // Tests
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    testImplementation 'androidx.arch.core:core-testing:2.0.1'
+    testImplementation "com.google.truth:truth:0.36"
+    testImplementation "org.robolectric:robolectric:4.3"
+    testImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
+    androidTestImplementation "androidx.test.espresso:espresso-intents:$espresso_version"
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:$espresso_version"
+    testImplementation 'org.mockito:mockito-core:2.24.5'
+    androidTestImplementation 'org.mockito:mockito-android:2.24.5'
+    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
 }
