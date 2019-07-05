@@ -65,7 +65,6 @@ class WeatherRepositoryProvider(
                         getCurrentWeatherFromApi(userLocation)
                     }?.subscribeOn(getWorkerScheduler()),
                 getCurrentWeatherFromDataBase().retry(RETRY_COUNT, ::retryPredicate)
-                    .timeout(TIMEOUT_INTERVAL, java.util.concurrent.TimeUnit.SECONDS)
             )
         } else {
             return getCurrentWeatherFromDataBase()
@@ -82,7 +81,6 @@ class WeatherRepositoryProvider(
                 }
                 ?.subscribeOn(getWorkerScheduler()), getFutureWeatherFromDatabase())
                 .retry(RETRY_COUNT, ::retryPredicate)
-                .timeout(TIMEOUT_INTERVAL, java.util.concurrent.TimeUnit.SECONDS)
         } else {
             return getFutureWeatherFromDatabase()
         }
@@ -98,7 +96,6 @@ class WeatherRepositoryProvider(
             .flatMap { t: FutureWeather ->
                 Observable.just(t.fromApiDataToFutureWeatherModel())
             }
-            .timeout(TIMEOUT_INTERVAL, java.util.concurrent.TimeUnit.SECONDS)
             .subscribeOn(getWorkerScheduler())
 
     private fun getFutureWeatherFromDatabase() = weatherDatabase.futureWeatherDao().getFutureWeather()
