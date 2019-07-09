@@ -2,12 +2,16 @@ package com.weather.weathermvvmapp.data.network
 
 import android.content.Context
 import android.net.ConnectivityManager
+import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.IOException
+
 
 const val API_KEY = "9559b7571ec00e4dd0b80e9337083adc"
 const val UNITS = "metric"
@@ -52,4 +56,46 @@ fun isDeviceOnline(context: Context?): Boolean {
     ) as ConnectivityManager
     val networkInfo = connectivityManager.activeNetworkInfo
     return networkInfo != null && networkInfo.isConnectedOrConnecting
+}
+
+@Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+class BaseUrlChangingInterceptor : Interceptor {
+
+    private var httpUrl: HttpUrl? = HttpUrl.parse(WEATHER_URL)
+
+
+    fun setInterceptor(url: String) {
+        httpUrl = HttpUrl.parse(url)!!
+    }
+
+    @Throws(IOException::class)
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val url = chain.request()
+            .newBuilder()
+            .url(httpUrl)
+            .build()
+            .url()
+            .newBuilder()
+            .addQueryParameter("appid", API_KEY)
+            .addQueryParameter("units", UNITS)
+            .build()
+
+        val request = chain.request()
+            .newBuilder()
+            .url(url)
+            .build()
+
+        return chain.proceed(request)
+    }
+
+    companion object {
+        private var sInterceptor: BaseUrlChangingInterceptor? = null
+
+        fun get(): BaseUrlChangingInterceptor {
+            if (sInterceptor == null) {
+                sInterceptor = BaseUrlChangingInterceptor()
+            }
+            return sInterceptor as BaseUrlChangingInterceptor
+        }
+    }
 }
