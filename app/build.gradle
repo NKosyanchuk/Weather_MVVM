@@ -46,6 +46,8 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.room:room-rxjava2:$room_version"
     implementation "androidx.legacy:legacy-support-v4:1.0.0"
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.0.0'
     kapt "androidx.room:room-compiler:$room_version"
 
     // Gson
@@ -59,6 +61,8 @@ dependencies {
     // WeatherLocation
     implementation "com.google.android.gms:play-services-location:17.0.0"
     implementation 'pl.charmas.android:android-reactive-location2:2.1@aar'
+
+    implementation 'com.google.android.gms:play-services-maps:17.0.0'
 
     // New Material Design
     implementation "com.google.android.material:material:1.0.0"
@@ -82,7 +86,7 @@ dependencies {
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
         exclude group: 'asm', module: 'asm'
         exclude group: 'org.json', module: 'json'
-        exclude group: 'com.google.guava', module:'guava'
+        exclude group: 'com.google.guava', module: 'guava'
     }
     implementation 'org.apache.httpcomponents:httpclient-android:4.3.5'
 }
