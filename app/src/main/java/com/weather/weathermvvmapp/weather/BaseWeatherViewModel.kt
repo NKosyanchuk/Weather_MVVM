@@ -3,9 +3,6 @@ package com.weather.weathermvvmapp.weather
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import io.reactivex.Observable
-import io.reactivex.Scheduler
-import io.reactivex.disposables.CompositeDisposable
 
 
 data class ViewObject<T>(
@@ -15,10 +12,7 @@ data class ViewObject<T>(
     val throwable: Throwable?
 )
 
-abstract class BaseWeatherViewModel<T>(
-    private val workerScheduler: Scheduler,
-    private val resultScheduler: Scheduler
-) : ViewModel() {
+abstract class BaseWeatherViewModel<T> : ViewModel() {
 
     private val mutableLiveData = MutableLiveData<ViewObject<T>>().apply {
         value = ViewObject(
@@ -29,15 +23,11 @@ abstract class BaseWeatherViewModel<T>(
         )
     }
 
-    private val disposables = CompositeDisposable()
-
-    protected abstract fun createDataObservable(): Observable<T>?
+    protected abstract fun createLiveData(): LiveData<T>?
 
     fun liveData(): LiveData<ViewObject<T>> = mutableLiveData
 
-    fun refreshData() {
-        fetchData()
-    }
+    abstract fun refreshData()
 
     protected fun fetchData() {
         val currentData = mutableLiveData.value
@@ -46,33 +36,17 @@ abstract class BaseWeatherViewModel<T>(
         }
         mutableLiveData.postValue(currentData?.copy(progress = true))
 
-        if (createDataObservable() != null) {
-            disposables.add(
-                createDataObservable()!!
-                    .subscribeOn(workerScheduler)
-                    .observeOn(resultScheduler)
-                    .subscribe(
-                        {
-                            mutableLiveData.postValue(
-                                currentData?.copy(
-                                    data = it,
-                                    progress = false,
-                                    error = false,
-                                    throwable = null
-                                )
-                            )
-                        },
-                        {
-                            mutableLiveData.postValue(
-                                currentData?.copy(
-                                    data = null,
-                                    progress = false,
-                                    error = true,
-                                    throwable = it
-                                )
-                            )
-                        }
-                    ))
+        if (createLiveData() != null) {
+            createLiveData()!!.observeForever {
+                mutableLiveData.postValue(
+                    currentData?.copy(
+                        data = it,
+                        progress = false,
+                        error = false,
+                        throwable = null
+                    )
+                )
+            }
         } else {
             mutableLiveData.postValue(
                 currentData?.copy(
@@ -83,10 +57,5 @@ abstract class BaseWeatherViewModel<T>(
                 )
             )
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        disposables.clear()
     }
 }

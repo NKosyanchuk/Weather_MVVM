@@ -2,13 +2,13 @@ package com.weather.weathermvvmapp.data.network
 
 import android.content.Context
 import android.net.ConnectivityManager
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 
@@ -43,19 +43,22 @@ fun createApiInterface(): ApiWeatherInterface {
     val retrofit = Retrofit.Builder()
         .baseUrl(WEATHER_URL)
         .addConverterFactory(GsonConverterFactory.create())
-        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+        .addCallAdapterFactory(CoroutineCallAdapterFactory())
         .client(okClient)
         .build()
     return retrofit.create(ApiWeatherInterface::class.java)
 }
 
-fun isDeviceOnline(context: Context?): Boolean {
-    val connectivityManager = context?.getSystemService(
-        Context
-            .CONNECTIVITY_SERVICE
-    ) as ConnectivityManager
-    val networkInfo = connectivityManager.activeNetworkInfo
-    return networkInfo != null && networkInfo.isConnectedOrConnecting
+class NetworkProvider(val context: Context?) {
+
+    fun isDeviceOnline(): Boolean {
+        val connectivityManager = context?.getSystemService(
+            Context
+                .CONNECTIVITY_SERVICE
+        ) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.isConnectedOrConnecting
+    }
 }
 
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")

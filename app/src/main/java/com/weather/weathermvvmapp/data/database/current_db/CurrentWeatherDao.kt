@@ -6,7 +6,6 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.weather.weathermvvmapp.data.database.CURRENT_WEATHER_DATABASE_NAME
 import com.weather.weathermvvmapp.data.database.CURRENT_WEATHER_ID
-import io.reactivex.Observable
 
 @Dao
 interface CurrentWeatherDao {
@@ -15,5 +14,5 @@ interface CurrentWeatherDao {
     fun insert(weatherEntry: CurrentWeatherModel)
 
     @Query("select * from $CURRENT_WEATHER_DATABASE_NAME where id = $CURRENT_WEATHER_ID")
-    fun getCurrentWeather(): Observable<CurrentWeatherModel>
+    fun getCurrentWeather(): CurrentWeatherModel
 }
