@@ -41,7 +41,7 @@ class CurrentWeatherFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        currentWeatherViewModel.liveData().observe(this, Observer { viewObject ->
+        currentWeatherViewModel.liveData().observe(viewLifecycleOwner, Observer { viewObject ->
             showProgress(viewObject.progress)
             when {
                 viewObject.error -> {

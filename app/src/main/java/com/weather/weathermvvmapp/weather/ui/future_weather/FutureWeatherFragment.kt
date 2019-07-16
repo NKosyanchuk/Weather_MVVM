@@ -42,7 +42,7 @@ class FutureWeatherFragment : Fragment() {
 
         initFutureWeatherListView()
 
-        futureWeatherViewModel.liveData().observe(this, Observer { viewObject ->
+        futureWeatherViewModel.liveData().observe(viewLifecycleOwner, Observer { viewObject ->
             showProgress(viewObject.progress)
             when {
                 viewObject.error -> {

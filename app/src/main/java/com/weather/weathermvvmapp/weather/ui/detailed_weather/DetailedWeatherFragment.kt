@@ -50,7 +50,7 @@ class DetailedWeatherFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        detailedWeatherViewModel.liveData().observe(this, Observer { viewObject ->
+        detailedWeatherViewModel.liveData().observe(viewLifecycleOwner, Observer { viewObject ->
             when (viewObject) {
                 null -> return@Observer
                 else -> showDetailedWeather(viewObject)
