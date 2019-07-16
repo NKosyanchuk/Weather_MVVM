@@ -8,8 +8,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.weather.weathermvvmapp.R
+import com.weather.weathermvvmapp.data.database.future_db.FutureWeatherListObjectModel
 import com.weather.weathermvvmapp.data.database.future_db.FutureWeatherModel
-import com.weather.weathermvvmapp.data.network.response.FutureWeatherListObject
 import com.weather.weathermvvmapp.extensions.replaceFragment
 import com.weather.weathermvvmapp.extensions.showToast
 import com.weather.weathermvvmapp.weather.model.FutureWeatherViewModel
@@ -63,8 +63,8 @@ class FutureWeatherFragment : Fragment() {
     }
 
     private fun initFutureWeatherListView() {
-        futureWeatherAdapter = FutureWeatherAdapter { futureWeatherObjectDate ->
-            //            showDetailedWeather(futureWeatherObjectDate)
+        futureWeatherAdapter = FutureWeatherAdapter { futureWeatherListObjectModel ->
+                        showDetailedWeather(futureWeatherListObjectModel)
         }
         futureWeatherRv.apply {
             adapter = futureWeatherAdapter
@@ -72,8 +72,8 @@ class FutureWeatherFragment : Fragment() {
         }
     }
 
-    private fun showDetailedWeather(futureWeatherListObject: FutureWeatherListObject) {
-        val detailedWeatherFragment = DetailedWeatherFragment.newInstance(futureWeatherListObject)
+    private fun showDetailedWeather(futureWeatherListObjectModel: FutureWeatherListObjectModel) {
+        val detailedWeatherFragment = DetailedWeatherFragment.newInstance(futureWeatherListObjectModel)
         replaceFragment(detailedWeatherFragment)
     }
 
