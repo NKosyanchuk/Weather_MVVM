@@ -9,7 +9,6 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.weather.weathermvvmapp.R
 import com.weather.weathermvvmapp.data.database.future_db.FutureWeatherListObjectModel
-import com.weather.weathermvvmapp.data.database.future_db.FutureWeatherModel
 import com.weather.weathermvvmapp.extensions.replaceFragment
 import com.weather.weathermvvmapp.extensions.showToast
 import com.weather.weathermvvmapp.weather.model.FutureWeatherViewModel
@@ -53,7 +52,7 @@ class FutureWeatherFragment : Fragment() {
                     }
                 }
                 viewObject.data == null -> return@Observer
-                else -> showFutureWeather(viewObject.data)
+                else -> showFutureWeather(viewObject.data as ArrayList<FutureWeatherListObjectModel>?)
             }
         })
 
@@ -63,8 +62,8 @@ class FutureWeatherFragment : Fragment() {
     }
 
     private fun initFutureWeatherListView() {
-        futureWeatherAdapter = FutureWeatherAdapter { futureWeatherListObjectModel ->
-                        showDetailedWeather(futureWeatherListObjectModel)
+        futureWeatherAdapter = FutureWeatherAdapter { dayInMils ->
+            showDetailedWeather(dayInMils)
         }
         futureWeatherRv.apply {
             adapter = futureWeatherAdapter
@@ -72,8 +71,8 @@ class FutureWeatherFragment : Fragment() {
         }
     }
 
-    private fun showDetailedWeather(futureWeatherListObjectModel: FutureWeatherListObjectModel) {
-        val detailedWeatherFragment = DetailedWeatherFragment.newInstance(futureWeatherListObjectModel)
+    private fun showDetailedWeather(dayInMils: Long) {
+        val detailedWeatherFragment = DetailedWeatherFragment.newInstance(dayInMils)
         replaceFragment(detailedWeatherFragment)
     }
 
@@ -86,7 +85,7 @@ class FutureWeatherFragment : Fragment() {
         }
     }
 
-    private fun showFutureWeather(futureWeather: FutureWeatherModel) {
-        futureWeather.listWeather?.let { futureWeatherAdapter.updateWeather(it) }
+    private fun showFutureWeather(futureWeather: ArrayList<FutureWeatherListObjectModel>?) {
+        futureWeather?.let { futureWeatherAdapter.updateWeather(it) }
     }
 }

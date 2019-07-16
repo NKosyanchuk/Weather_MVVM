@@ -6,8 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import com.weather.weathermvvmapp.data.database.WeatherDatabase
 import com.weather.weathermvvmapp.data.database.current_db.CurrentWeatherModel
 import com.weather.weathermvvmapp.data.database.current_db.fromApiDataToModelWeather
-import com.weather.weathermvvmapp.data.database.future_db.FutureWeatherModel
-import com.weather.weathermvvmapp.data.database.future_db.fromApiDataToFutureWeatherModel
+import com.weather.weathermvvmapp.data.database.future_db.FutureWeatherListObjectModel
+import com.weather.weathermvvmapp.data.database.future_db.createArrayFromApiWeatherList
 import com.weather.weathermvvmapp.data.network.ApiWeatherInterface
 import com.weather.weathermvvmapp.data.network.NetworkProvider
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +20,8 @@ private const val DAYS = 10
 
 interface WeatherRepository {
     fun getCurrentWeatherModel(locationProvider: LocationProvider): LiveData<CurrentWeatherModel>?
-    fun getFutureWeatherModel(locationProvider: LocationProvider): LiveData<FutureWeatherModel>?
+    fun getFutureWeatherModel(locationProvider: LocationProvider): LiveData<List<FutureWeatherListObjectModel>>?
+    fun getSpecificWeatherModel(dt: Long?): LiveData<FutureWeatherListObjectModel>?
 }
 
 class WeatherRepositoryProvider(
@@ -65,9 +66,9 @@ class WeatherRepositoryProvider(
         }
     }
 
-    private val futureWeatherMutableLiveData = MutableLiveData<FutureWeatherModel>()
+    private val futureWeatherMutableLiveData = MutableLiveData<List<FutureWeatherListObjectModel>>()
 
-    override fun getFutureWeatherModel(locationProvider: LocationProvider): LiveData<FutureWeatherModel>? {
+    override fun getFutureWeatherModel(locationProvider: LocationProvider): LiveData<List<FutureWeatherListObjectModel>>? {
         return futureWeatherMutableLiveData
     }
 
@@ -76,14 +77,16 @@ class WeatherRepositoryProvider(
             try {
                 val userLastLocationAsync = userLocation(locationProvider)
                 if (userLastLocationAsync != null && networkProvider.isDeviceOnline()) {
-                    val fromApiDataToFutureModelWeather = apiWeatherInterface.getFutureWeatherAsync(
-                        userLastLocationAsync.latitude,
-                        userLastLocationAsync.longitude,
-                        DAYS
-                    ).await().fromApiDataToFutureWeatherModel()
+                    val fromApiDataToFutureModelWeatherList = createArrayFromApiWeatherList(
+                        apiWeatherInterface.getFutureWeatherAsync(
+                            userLastLocationAsync.latitude,
+                            userLastLocationAsync.longitude,
+                            DAYS
+                        ).await().listWeather
+                    )
                     GlobalScope.launch(Dispatchers.IO) {
-                        weatherDatabase.futureWeatherDao().insert(fromApiDataToFutureModelWeather)
-                        futureWeatherMutableLiveData.postValue(fromApiDataToFutureModelWeather)
+                        weatherDatabase.futureWeatherDao().insertFutureListAll(fromApiDataToFutureModelWeatherList)
+                        futureWeatherMutableLiveData.postValue(fromApiDataToFutureModelWeatherList)
                     }.join()
                 } else {
                     futureWeatherMutableLiveData.postValue(getFutureWeatherModelFromDB())
@@ -94,9 +97,23 @@ class WeatherRepositoryProvider(
         }
     }
 
-    private suspend fun getFutureWeatherModelFromDB(): FutureWeatherModel? {
+    private suspend fun getFutureWeatherModelFromDB(): List<FutureWeatherListObjectModel>? {
         return withContext(Dispatchers.IO) {
-            return@withContext weatherDatabase.futureWeatherDao().getFutureWeather()
+            return@withContext weatherDatabase.futureWeatherDao().getFutureList()
+        }
+    }
+
+    private val specificWeatherMutableLiveData = MutableLiveData<FutureWeatherListObjectModel>()
+
+    override fun getSpecificWeatherModel(dt: Long?): LiveData<FutureWeatherListObjectModel>? {
+        return specificWeatherMutableLiveData
+    }
+
+    fun getSpecificFutureWeatherModelObject(dt: Long?) {
+        GlobalScope.launch(Dispatchers.IO) {
+            specificWeatherMutableLiveData.postValue(dt?.let {
+                weatherDatabase.futureWeatherDao().getSpecificFutureObject(it)
+            })
         }
     }
 }

@@ -5,14 +5,16 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.weather.weathermvvmapp.data.database.FUTURE_WEATHER_DATABASE_NAME
-import com.weather.weathermvvmapp.data.database.FUTURE_WEATHER_ID
 
 
 @Dao
 interface FutureWeatherDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(futureWeatherEntries: FutureWeatherModel)
+    fun insertFutureListAll(futureWeatherListObjectModel: List<FutureWeatherListObjectModel>)
 
-    @Query("select * from $FUTURE_WEATHER_DATABASE_NAME where id = $FUTURE_WEATHER_ID")
-    fun getFutureWeather(): FutureWeatherModel
+    @Query("SELECT * FROM $FUTURE_WEATHER_DATABASE_NAME")
+    fun getFutureList(): List<FutureWeatherListObjectModel>
+
+    @Query("SELECT * FROM $FUTURE_WEATHER_DATABASE_NAME WHERE dt = :day")
+    fun getSpecificFutureObject(day: Long): FutureWeatherListObjectModel
 }

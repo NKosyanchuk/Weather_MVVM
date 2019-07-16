@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.weather.weathermvvmapp.data.database.WeatherDatabase
-import com.weather.weathermvvmapp.data.database.future_db.FutureWeatherModel
+import com.weather.weathermvvmapp.data.database.future_db.FutureWeatherListObjectModel
 import com.weather.weathermvvmapp.data.network.NetworkProvider
 import com.weather.weathermvvmapp.data.network.createApiInterface
 import com.weather.weathermvvmapp.data.repository.LocationProvider
@@ -17,7 +17,7 @@ import com.weather.weathermvvmapp.weather.BaseWeatherViewModel
 class FutureWeatherViewModel(
     private val weatherRepositoryProvider: WeatherRepositoryProvider,
     private val locationProvider: LocationProvider
-) : BaseWeatherViewModel<FutureWeatherModel>() {
+) : BaseWeatherViewModel<List<FutureWeatherListObjectModel>>() {
     override fun refreshData() {
         weatherRepositoryProvider.getFutureWeather(locationProvider)
     }
@@ -27,7 +27,7 @@ class FutureWeatherViewModel(
         weatherRepositoryProvider.getFutureWeather(locationProvider)
     }
 
-    override fun createLiveData(): LiveData<FutureWeatherModel>? =
+    override fun createLiveData(): LiveData<List<FutureWeatherListObjectModel>>? =
         weatherRepositoryProvider.getFutureWeatherModel(locationProvider)
 
     companion object {

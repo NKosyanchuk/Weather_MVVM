@@ -7,12 +7,12 @@ import androidx.room.RoomDatabase
 import com.weather.weathermvvmapp.data.database.current_db.CurrentWeatherDao
 import com.weather.weathermvvmapp.data.database.current_db.CurrentWeatherModel
 import com.weather.weathermvvmapp.data.database.future_db.FutureWeatherDao
-import com.weather.weathermvvmapp.data.database.future_db.FutureWeatherModel
+import com.weather.weathermvvmapp.data.database.future_db.FutureWeatherListObjectModel
 
 
 @Database(
-    entities = [CurrentWeatherModel::class, FutureWeatherModel::class],
-    version = 2, exportSchema = false
+    entities = [CurrentWeatherModel::class, FutureWeatherListObjectModel::class],
+    version = 3, exportSchema = false
 )
 abstract class WeatherDatabase : RoomDatabase() {
     abstract fun currentWeatherDao(): CurrentWeatherDao

@@ -1,29 +1,46 @@
 package com.weather.weathermvvmapp.weather.model
 
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
+import com.weather.weathermvvmapp.data.database.WeatherDatabase
 import com.weather.weathermvvmapp.data.database.future_db.FutureWeatherListObjectModel
+import com.weather.weathermvvmapp.data.network.NetworkProvider
+import com.weather.weathermvvmapp.data.network.createApiInterface
+import com.weather.weathermvvmapp.data.repository.WeatherRepositoryProvider
+import com.weather.weathermvvmapp.weather.BaseWeatherViewModel
 
 class DetailedWeatherViewModel(
-    futureWeatherListObject: FutureWeatherListObjectModel?
-) : ViewModel() {
+    private val weatherRepositoryProvider: WeatherRepositoryProvider,
+    private val dayInMils: Long?
+) : BaseWeatherViewModel<FutureWeatherListObjectModel>() {
 
-    private var detailWeatherMutable: MutableLiveData<FutureWeatherListObjectModel> = MutableLiveData()
-    private var detailWeatherLiveData: LiveData<FutureWeatherListObjectModel> = detailWeatherMutable
+    override fun refreshData() {
+        weatherRepositoryProvider.getSpecificFutureWeatherModelObject(dayInMils)
+    }
 
     init {
-        detailWeatherMutable.value = futureWeatherListObject
+        fetchData()
+        weatherRepositoryProvider.getSpecificFutureWeatherModelObject(dayInMils)
     }
 
-    fun liveData(): LiveData<FutureWeatherListObjectModel> {
-        return detailWeatherLiveData
-    }
+    override fun createLiveData(): LiveData<FutureWeatherListObjectModel>? = weatherRepositoryProvider.getSpecificWeatherModel(dayInMils)
 
     companion object {
-        fun getInstance(fragment: Fragment, futureWeatherListObjectModel: FutureWeatherListObjectModel?): DetailedWeatherViewModel {
+        fun getInstance(
+            fragment: Fragment,
+            dayInMils: Long?
+        ): DetailedWeatherViewModel {
             return ViewModelProviders.of(fragment, object : ViewModelProvider.Factory {
                 override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                    return DetailedWeatherViewModel(futureWeatherListObjectModel) as T
+                    val weatherRepositoryProvider = WeatherRepositoryProvider(
+                        createApiInterface(),
+                        WeatherDatabase.invoke(fragment.requireContext()),
+                        NetworkProvider(fragment.requireContext())
+                    )
+                    return DetailedWeatherViewModel(weatherRepositoryProvider, dayInMils) as T
                 }
             })[DetailedWeatherViewModel::class.java]
         }

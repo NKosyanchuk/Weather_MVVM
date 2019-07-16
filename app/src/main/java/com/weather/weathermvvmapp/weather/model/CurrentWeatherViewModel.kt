@@ -18,7 +18,7 @@ class CurrentWeatherViewModel(
     private val weatherRepositoryProvider: WeatherRepositoryProvider,
     private val locationProvider: LocationProvider
 ) : BaseWeatherViewModel<CurrentWeatherModel>() {
-    override fun refreshData() {
+     override fun refreshData() {
         weatherRepositoryProvider.getCurrentWeather(locationProvider)
     }
 
