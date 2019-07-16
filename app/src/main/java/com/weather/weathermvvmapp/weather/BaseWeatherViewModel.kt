@@ -2,8 +2,8 @@ package com.weather.weathermvvmapp.weather
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
-
 
 data class ViewObject<T>(
     val data: T?,
@@ -23,6 +23,19 @@ abstract class BaseWeatherViewModel<T> : ViewModel() {
         )
     }
 
+    private val observer: Observer<in T> = Observer {
+        mutableLiveData.postValue(
+            currentData?.copy(
+                data = it,
+                progress = false,
+                error = false,
+                throwable = null
+            )
+        )
+    }
+
+    private val currentData = mutableLiveData.value
+
     protected abstract fun createLiveData(): LiveData<T>?
 
     fun liveData(): LiveData<ViewObject<T>> = mutableLiveData
@@ -37,16 +50,7 @@ abstract class BaseWeatherViewModel<T> : ViewModel() {
         mutableLiveData.postValue(currentData?.copy(progress = true))
 
         if (createLiveData() != null) {
-            createLiveData()!!.observeForever {
-                mutableLiveData.postValue(
-                    currentData?.copy(
-                        data = it,
-                        progress = false,
-                        error = false,
-                        throwable = null
-                    )
-                )
-            }
+            createLiveData()?.observeForever(observer)
         } else {
             mutableLiveData.postValue(
                 currentData?.copy(
@@ -57,5 +61,10 @@ abstract class BaseWeatherViewModel<T> : ViewModel() {
                 )
             )
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        createLiveData()?.removeObserver(observer)
     }
 }
