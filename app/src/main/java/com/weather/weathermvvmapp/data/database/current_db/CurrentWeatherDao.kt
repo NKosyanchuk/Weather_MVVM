@@ -11,8 +11,8 @@ import com.weather.weathermvvmapp.data.database.CURRENT_WEATHER_ID
 interface CurrentWeatherDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(weatherEntry: CurrentWeatherModel)
+    suspend fun insert(weatherEntry: CurrentWeatherModel)
 
     @Query("select * from $CURRENT_WEATHER_DATABASE_NAME where id = $CURRENT_WEATHER_ID")
-    fun getCurrentWeather(): CurrentWeatherModel
+    suspend fun getCurrentWeather(): CurrentWeatherModel
 }

@@ -10,17 +10,16 @@ import com.weather.weathermvvmapp.data.database.future_db.FutureWeatherListObjec
 import com.weather.weathermvvmapp.data.database.future_db.createArrayFromApiWeatherList
 import com.weather.weathermvvmapp.data.network.ApiWeatherInterface
 import com.weather.weathermvvmapp.data.network.NetworkProvider
+import com.weather.weathermvvmapp.data.network.result.NetworkCurrentWeatherResult
+import com.weather.weathermvvmapp.data.network.result.NetworkFutureWeatherResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 
 private const val DAYS = 10
 
 interface WeatherRepository {
-    fun getCurrentWeatherModel(locationProvider: LocationProvider): LiveData<CurrentWeatherModel>?
-    fun getFutureWeatherModel(locationProvider: LocationProvider): LiveData<List<FutureWeatherListObjectModel>>?
     fun getSpecificWeatherModel(dt: Long?): LiveData<FutureWeatherListObjectModel>?
 }
 
@@ -30,77 +29,53 @@ class WeatherRepositoryProvider(
     private val networkProvider: NetworkProvider
 ) : WeatherRepository {
 
-    private val currentWeatherMutableLiveData = MutableLiveData<CurrentWeatherModel>()
-
-    override fun getCurrentWeatherModel(locationProvider: LocationProvider): LiveData<CurrentWeatherModel>? {
-        return currentWeatherMutableLiveData
-    }
-
-    fun getCurrentWeather(location: LocationProvider) {
-        GlobalScope.launch(Dispatchers.IO) {
-            try {
-                val userLastLocationAsync = userLocation(location)
-                if (userLastLocationAsync != null && networkProvider.isDeviceOnline()) {
-                    val fromApiDataToModelWeather = apiWeatherInterface.getCurrentWeatherAsync(
-                        userLastLocationAsync.latitude,
-                        userLastLocationAsync.longitude
-                    ).await().fromApiDataToModelWeather()
-                    GlobalScope.launch(Dispatchers.IO) {
-                        weatherDatabase.currentWeatherDao().insert(fromApiDataToModelWeather)
-                        currentWeatherMutableLiveData.postValue(fromApiDataToModelWeather)
-                    }.join()
-                } else {
-                    currentWeatherMutableLiveData.postValue(getCurrentWeatherModelFromDB())
-                }
-            } catch (e: Exception) {
-                currentWeatherMutableLiveData.postValue(null)
+    suspend fun getCurrentWeather(locationProvider: LocationProvider): NetworkCurrentWeatherResult {
+        return try {
+            val userLastLocationAsync = userLocation(locationProvider)
+            if (userLastLocationAsync != null && networkProvider.isDeviceOnline()) {
+                val fromApiDataToModelWeather = apiWeatherInterface.getCurrentWeatherAsync(
+                    userLastLocationAsync.latitude,
+                    userLastLocationAsync.longitude
+                ).await()
+                weatherDatabase.currentWeatherDao().insert(fromApiDataToModelWeather.fromApiDataToModelWeather())
+                NetworkCurrentWeatherResult.Success(fromApiDataToModelWeather.fromApiDataToModelWeather())
+            } else {
+                NetworkCurrentWeatherResult.Success(getCurrentWeatherModelFromDB())
             }
+        } catch (e: Exception) {
+            NetworkCurrentWeatherResult.CommunicationError(e)
         }
     }
 
     private suspend fun userLocation(location: LocationProvider): Location? = location.getUserLastLocationAsync()
 
-    private suspend fun getCurrentWeatherModelFromDB(): CurrentWeatherModel {
-        return withContext(Dispatchers.IO) {
-            return@withContext weatherDatabase.currentWeatherDao().getCurrentWeather()
-        }
+    private suspend fun getCurrentWeatherModelFromDB(): CurrentWeatherModel? {
+        return weatherDatabase.currentWeatherDao().getCurrentWeather()
     }
 
-    private val futureWeatherMutableLiveData = MutableLiveData<List<FutureWeatherListObjectModel>>()
-
-    override fun getFutureWeatherModel(locationProvider: LocationProvider): LiveData<List<FutureWeatherListObjectModel>>? {
-        return futureWeatherMutableLiveData
-    }
-
-    fun getFutureWeather(locationProvider: LocationProvider) {
-        GlobalScope.launch(Dispatchers.IO) {
-            try {
-                val userLastLocationAsync = userLocation(locationProvider)
-                if (userLastLocationAsync != null && networkProvider.isDeviceOnline()) {
-                    val fromApiDataToFutureModelWeatherList = createArrayFromApiWeatherList(
-                        apiWeatherInterface.getFutureWeatherAsync(
-                            userLastLocationAsync.latitude,
-                            userLastLocationAsync.longitude,
-                            DAYS
-                        ).await().listWeather
-                    )
-                    GlobalScope.launch(Dispatchers.IO) {
-                        weatherDatabase.futureWeatherDao().insertFutureListAll(fromApiDataToFutureModelWeatherList)
-                        futureWeatherMutableLiveData.postValue(fromApiDataToFutureModelWeatherList)
-                    }.join()
-                } else {
-                    futureWeatherMutableLiveData.postValue(getFutureWeatherModelFromDB())
-                }
-            } catch (e: Exception) {
-                currentWeatherMutableLiveData.postValue(null)
+    suspend fun getFutureWeather(locationProvider: LocationProvider): NetworkFutureWeatherResult {
+        return try {
+            val userLastLocationAsync = userLocation(locationProvider)
+            if (userLastLocationAsync != null && networkProvider.isDeviceOnline()) {
+                val fromApiDataToFutureModelWeatherList = createArrayFromApiWeatherList(
+                    apiWeatherInterface.getFutureWeatherAsync(
+                        userLastLocationAsync.latitude,
+                        userLastLocationAsync.longitude,
+                        DAYS
+                    ).await().listWeather
+                )
+                weatherDatabase.futureWeatherDao().insertFutureListAll(fromApiDataToFutureModelWeatherList)
+                NetworkFutureWeatherResult.Success(fromApiDataToFutureModelWeatherList)
+            } else {
+                NetworkFutureWeatherResult.Success(getFutureWeatherModelFromDB())
             }
+        } catch (e: Exception) {
+            NetworkFutureWeatherResult.CommunicationError(e)
         }
     }
 
     private suspend fun getFutureWeatherModelFromDB(): List<FutureWeatherListObjectModel>? {
-        return withContext(Dispatchers.IO) {
-            return@withContext weatherDatabase.futureWeatherDao().getFutureList()
-        }
+        return weatherDatabase.futureWeatherDao().getFutureList()
     }
 
     private val specificWeatherMutableLiveData = MutableLiveData<FutureWeatherListObjectModel>()

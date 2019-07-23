@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
 data class ViewObject<T>(
     val data: T?,
@@ -14,7 +16,7 @@ data class ViewObject<T>(
 
 abstract class BaseWeatherViewModel<T> : ViewModel() {
 
-    private val mutableLiveData = MutableLiveData<ViewObject<T>>().apply {
+     val mutableLiveData = MutableLiveData<ViewObject<T>>().apply {
         value = ViewObject(
             data = null,
             progress = false,
@@ -35,6 +37,8 @@ abstract class BaseWeatherViewModel<T> : ViewModel() {
     }
 
     private val currentData = mutableLiveData.value
+
+    val scope = CoroutineScope(Dispatchers.Main)
 
     protected abstract fun createLiveData(): LiveData<T>?
 
