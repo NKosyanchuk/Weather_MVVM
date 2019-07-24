@@ -10,7 +10,9 @@ import com.squareup.picasso.Picasso
 import com.weather.weathermvvmapp.R
 import com.weather.weathermvvmapp.data.database.future_db.FutureWeatherListObjectModel
 import com.weather.weathermvvmapp.data.network.WEATHER_ICON_URL
+import com.weather.weathermvvmapp.extensions.getDateFromString
 import com.weather.weathermvvmapp.extensions.roundDoubleToString
+import com.weather.weathermvvmapp.extensions.setupTitle
 import com.weather.weathermvvmapp.extensions.showToast
 import com.weather.weathermvvmapp.weather.model.DetailedWeatherViewModel
 import kotlinx.android.synthetic.main.detailed_weather_fragment.*
@@ -67,6 +69,7 @@ class DetailedWeatherFragment : Fragment() {
     }
 
     private fun showDetailedWeather(futureWeatherListObjectModel: FutureWeatherListObjectModel) {
+        setupTitle(getDateFromString(futureWeatherListObjectModel.dt * 1000))
         temperatureTv.text = getTemperatureString(futureWeatherListObjectModel)
         descriptionTv.text = futureWeatherListObjectModel.description
         setupWeatherIcon(futureWeatherListObjectModel)

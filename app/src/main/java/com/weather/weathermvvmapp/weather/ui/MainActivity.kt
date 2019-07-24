@@ -11,7 +11,7 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.weather.weathermvvmapp.R
-import com.weather.weathermvvmapp.extensions.loadFragment
+import com.weather.weathermvvmapp.extensions.replaceFragmentInActivity
 import com.weather.weathermvvmapp.extensions.showToast
 import com.weather.weathermvvmapp.weather.LifecycleBoundLocationManager
 import com.weather.weathermvvmapp.weather.ui.current_weather.CurrentWeatherFragment
@@ -120,12 +120,12 @@ class MainActivity : AppCompatActivity(), MainMenuNavigator {
 
     override fun showCurrentWeatherFragment() {
         val currentWeatherFragment = CurrentWeatherFragment.newInstance()
-        loadFragment(currentWeatherFragment)
+        replaceFragmentInActivity(currentWeatherFragment)
     }
 
     override fun showFeatureWeatherFragment() {
         val featureWeatherFragment = FutureWeatherFragment.newInstance()
-        loadFragment(featureWeatherFragment)
+        replaceFragmentInActivity(featureWeatherFragment)
     }
 
     override fun showLocationMapFragment() {

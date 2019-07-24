@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.weather.weathermvvmapp.R
 import com.weather.weathermvvmapp.data.database.future_db.FutureWeatherListObjectModel
 import com.weather.weathermvvmapp.extensions.replaceFragment
+import com.weather.weathermvvmapp.extensions.setupTitle
 import com.weather.weathermvvmapp.extensions.showToast
 import com.weather.weathermvvmapp.weather.model.FutureWeatherViewModel
 import com.weather.weathermvvmapp.weather.ui.detailed_weather.DetailedWeatherFragment
@@ -40,6 +41,8 @@ class FutureWeatherFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         initFutureWeatherListView()
+
+        setupTitle(getString(R.string.future_weather))
 
         futureWeatherViewModel.liveData().observe(viewLifecycleOwner, Observer { viewObject ->
             showProgress(viewObject.progress)

@@ -11,6 +11,7 @@ import com.weather.weathermvvmapp.R
 import com.weather.weathermvvmapp.data.database.current_db.CurrentWeatherModel
 import com.weather.weathermvvmapp.data.network.WEATHER_ICON_URL
 import com.weather.weathermvvmapp.extensions.roundDoubleToString
+import com.weather.weathermvvmapp.extensions.setupTitle
 import com.weather.weathermvvmapp.extensions.showToast
 import com.weather.weathermvvmapp.weather.model.CurrentWeatherViewModel
 
@@ -55,6 +56,8 @@ class CurrentWeatherFragment : Fragment() {
                 else -> showCurrentWeather(viewObject.data)
             }
         })
+
+        setupTitle(getString(R.string.current_weather))
 
         swipeToRefresh.setOnRefreshListener {
             currentWeatherViewModel.refreshData()

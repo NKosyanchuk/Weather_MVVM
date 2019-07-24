@@ -9,4 +9,6 @@
     <string name="minTemp">Min temp: </string>
     <string name="maxTemp">Max temp: </string>
     <string name="wind">Wind: %1$s m/s</string>
+    <string name="current_weather">Current weather</string>
+    <string name="future_weather">Future weather (10 days)</string>
 </resources>
