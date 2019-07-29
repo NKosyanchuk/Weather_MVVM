@@ -16,23 +16,15 @@ import com.weather.weathermvvmapp.extensions.setupTitle
 import com.weather.weathermvvmapp.extensions.showToast
 import com.weather.weathermvvmapp.weather.model.DetailedWeatherViewModel
 import kotlinx.android.synthetic.main.detailed_weather_fragment.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 
 const val DATA_MILLS_ARGS = "day_mils"
 
 class DetailedWeatherFragment : Fragment() {
 
-    companion object {
-        fun newInstance(dayInMils: Long?): DetailedWeatherFragment {
-            val detailedWeatherFragment = DetailedWeatherFragment()
-            val fragmentBundle = Bundle()
-            dayInMils?.let { fragmentBundle.putLong(DATA_MILLS_ARGS, it) }
-            detailedWeatherFragment.arguments = fragmentBundle
-            return detailedWeatherFragment
-        }
-    }
-
-    private lateinit var detailedWeatherViewModel: DetailedWeatherViewModel
+    private var dayInMils: Long = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,15 +35,15 @@ class DetailedWeatherFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        var dayInMils: Long? = null
         if (arguments != null) {
             dayInMils = arguments!!.getLong(DATA_MILLS_ARGS)
         }
-        detailedWeatherViewModel = DetailedWeatherViewModel.getInstance(this, dayInMils)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val detailedWeatherViewModel: DetailedWeatherViewModel by viewModel { parametersOf(dayInMils) }
 
         detailedWeatherViewModel.liveData().observe(viewLifecycleOwner, Observer { viewObject ->
             when {
@@ -90,5 +82,15 @@ class DetailedWeatherFragment : Fragment() {
         Picasso.get()
             .load(iconURL)
             .into(weatherIv)
+    }
+
+    companion object {
+        fun newInstance(dayInMils: Long?): DetailedWeatherFragment {
+            val detailedWeatherFragment = DetailedWeatherFragment()
+            val fragmentBundle = Bundle()
+            dayInMils?.let { fragmentBundle.putLong(DATA_MILLS_ARGS, it) }
+            detailedWeatherFragment.arguments = fragmentBundle
+            return detailedWeatherFragment
+        }
     }
 }

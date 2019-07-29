@@ -17,15 +17,12 @@ import com.weather.weathermvvmapp.weather.model.CurrentWeatherViewModel
 
 import kotlinx.android.synthetic.main.current_weather_fragment.*
 import kotlinx.android.synthetic.main.future_weather_fragment.loadingGroup
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class CurrentWeatherFragment : Fragment() {
 
-    companion object {
-        fun newInstance() = CurrentWeatherFragment()
-    }
-
-    private lateinit var currentWeatherViewModel: CurrentWeatherViewModel
+    private val currentWeatherViewModel: CurrentWeatherViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,14 +31,8 @@ class CurrentWeatherFragment : Fragment() {
         return inflater.inflate(R.layout.current_weather_fragment, container, false)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        currentWeatherViewModel = CurrentWeatherViewModel.getInstance(this)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         currentWeatherViewModel.liveData().observe(viewLifecycleOwner, Observer { viewObject ->
             showProgress(viewObject.progress)
             when {
@@ -100,5 +91,9 @@ class CurrentWeatherFragment : Fragment() {
             loadingGroup.visibility = View.GONE
             swipeToRefresh.isRefreshing = false
         }
+    }
+
+    companion object {
+        fun newInstance() = CurrentWeatherFragment()
     }
 }

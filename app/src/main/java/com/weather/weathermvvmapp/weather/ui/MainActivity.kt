@@ -17,6 +17,7 @@ import com.weather.weathermvvmapp.weather.LifecycleBoundLocationManager
 import com.weather.weathermvvmapp.weather.ui.current_weather.CurrentWeatherFragment
 import com.weather.weathermvvmapp.weather.ui.future_weather.FutureWeatherFragment
 import kotlinx.android.synthetic.main.activity_main.*
+import org.koin.android.ext.android.inject
 
 private const val MY_PERMISSION_ACCESS_COARSE_LOCATION = 1
 
@@ -29,7 +30,7 @@ interface MainMenuNavigator {
 class MainActivity : AppCompatActivity(), MainMenuNavigator {
 
     private lateinit var navigationItemSelectedListener: BottomNavigationView.OnNavigationItemSelectedListener
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    private val fusedLocationProviderClient: FusedLocationProviderClient by inject()
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(p0: LocationResult?) {
             super.onLocationResult(p0)
@@ -41,8 +42,6 @@ class MainActivity : AppCompatActivity(), MainMenuNavigator {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         initBottomNavigation()
-
-        fusedLocationProviderClient = FusedLocationProviderClient(this)
 
         requestLocationPermission()
 

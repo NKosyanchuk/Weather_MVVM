@@ -15,20 +15,13 @@ import com.weather.weathermvvmapp.extensions.showToast
 import com.weather.weathermvvmapp.weather.model.FutureWeatherViewModel
 import com.weather.weathermvvmapp.weather.ui.detailed_weather.DetailedWeatherFragment
 import kotlinx.android.synthetic.main.future_weather_fragment.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FutureWeatherFragment : Fragment() {
 
-    companion object {
-        fun newInstance() = FutureWeatherFragment()
-    }
+    private val futureWeatherViewModel: FutureWeatherViewModel by viewModel()
 
-    private lateinit var futureWeatherViewModel: FutureWeatherViewModel
     private lateinit var futureWeatherAdapter: FutureWeatherAdapter
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        futureWeatherViewModel = FutureWeatherViewModel.getInstance(this)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -90,5 +83,9 @@ class FutureWeatherFragment : Fragment() {
 
     private fun showFutureWeather(futureWeather: ArrayList<FutureWeatherListObjectModel>?) {
         futureWeather?.let { futureWeatherAdapter.updateWeather(it) }
+    }
+
+    companion object {
+        fun newInstance() = FutureWeatherFragment()
     }
 }
