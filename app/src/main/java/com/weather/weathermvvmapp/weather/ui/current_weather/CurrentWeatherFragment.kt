@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import com.squareup.picasso.Picasso
+import coil.api.load
 import com.weather.weathermvvmapp.R
 import com.weather.weathermvvmapp.data.database.current_db.CurrentWeatherModel
 import com.weather.weathermvvmapp.data.network.WEATHER_ICON_URL
@@ -67,9 +67,7 @@ class CurrentWeatherFragment : Fragment() {
     private fun setupWeatherIcon(currentWeatherIconURL: String) {
         //https//openweathermap.org/img/w/03d.png
         val iconURL = "$WEATHER_ICON_URL$currentWeatherIconURL.png"
-        Picasso.get()
-            .load(iconURL)
-            .into(weatherIv)
+        weatherIv.load(iconURL)
     }
 
     private fun formatTemperatureString(temperatureDouble: Double, isMin: Boolean): String {
