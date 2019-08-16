@@ -70,6 +70,12 @@ dependencies {
     //Picasso
     implementation 'com.squareup.picasso:picasso:2.71828'
 
+    // Dagger
+    implementation "com.google.dagger:dagger-android:$dagger_2_version"
+    implementation "com.google.dagger:dagger-android-support:$dagger_2_version"
+    kapt "com.google.dagger:dagger-compiler:$dagger_2_version"
+    kapt "com.google.dagger:dagger-android-processor:$dagger_2_version"
+
     // Tests
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'

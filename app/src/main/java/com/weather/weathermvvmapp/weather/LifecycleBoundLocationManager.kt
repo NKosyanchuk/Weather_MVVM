@@ -8,8 +8,9 @@ import androidx.lifecycle.OnLifecycleEvent
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
+import javax.inject.Inject
 
-class LifecycleBoundLocationManager(
+class LifecycleBoundLocationManager @Inject constructor(
     lifecycleOwner: LifecycleOwner,
     private val fusedLocationProviderClient: FusedLocationProviderClient,
     private val locationCallback: LocationCallback

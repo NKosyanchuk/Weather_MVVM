@@ -4,30 +4,32 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.weather.weathermvvmapp.R
 import com.weather.weathermvvmapp.data.database.future_db.FutureWeatherListObjectModel
 import com.weather.weathermvvmapp.extensions.replaceFragment
 import com.weather.weathermvvmapp.extensions.setupTitle
 import com.weather.weathermvvmapp.extensions.showToast
+import com.weather.weathermvvmapp.extensions.viewModelProvider
 import com.weather.weathermvvmapp.weather.model.FutureWeatherViewModel
 import com.weather.weathermvvmapp.weather.ui.detailed_weather.DetailedWeatherFragment
+import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.future_weather_fragment.*
+import javax.inject.Inject
 
-class FutureWeatherFragment : Fragment() {
+class FutureWeatherFragment : DaggerFragment() {
 
-    companion object {
-        fun newInstance() = FutureWeatherFragment()
-    }
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var futureWeatherViewModel: FutureWeatherViewModel
     private lateinit var futureWeatherAdapter: FutureWeatherAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        futureWeatherViewModel = FutureWeatherViewModel.getInstance(this)
+        futureWeatherViewModel = viewModelProvider(viewModelFactory)
     }
 
     override fun onCreateView(

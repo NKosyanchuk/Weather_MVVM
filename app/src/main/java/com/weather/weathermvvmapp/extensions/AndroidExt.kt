@@ -7,6 +7,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import com.weather.weathermvvmapp.R
 import java.text.SimpleDateFormat
 import java.util.*
@@ -29,10 +32,19 @@ fun getDateFromString(mills: Long): String {
 }
 
 fun Fragment.replaceFragment(newFragment: Fragment) {
-    this.fragmentManager?.transaction {
+    this.fragmentManager?.inTransaction {
         replace(R.id.container, newFragment)
         addToBackStack(null)
     }
+}
+
+/**
+ * Allows calls like
+ *
+ * `supportFragmentManager.inTransaction { add(...) }`
+ */
+inline fun FragmentManager.inTransaction(func: FragmentTransaction.() -> FragmentTransaction) {
+    beginTransaction().func().commit()
 }
 
 fun Double.roundDoubleToString(): String {
@@ -67,3 +79,8 @@ fun AppCompatActivity.setupActionBar(@IdRes toolbarId: Int, action: ActionBar.()
 fun Fragment.setupTitle(title: String) {
     activity?.title = title
 }
+
+inline fun <reified VM : ViewModel> Fragment.viewModelProvider(
+    provider: ViewModelProvider.Factory
+) =
+    ViewModelProviders.of(this, provider).get(VM::class.java)

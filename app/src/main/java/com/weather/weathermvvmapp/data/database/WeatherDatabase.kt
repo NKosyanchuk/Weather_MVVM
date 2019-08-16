@@ -19,15 +19,7 @@ abstract class WeatherDatabase : RoomDatabase() {
     abstract fun futureWeatherDao(): FutureWeatherDao
 
     companion object {
-        @Volatile
-        var instance: WeatherDatabase? = null
-        private val LOCK = Any()
-
-        operator fun invoke(context: Context) = instance ?: synchronized(LOCK) {
-            instance ?: buildDatabase(context).also { instance = it }
-        }
-
-        private fun buildDatabase(context: Context) =
+        fun buildDatabase(context: Context) =
             Room.databaseBuilder(
                 context.applicationContext,
                 WeatherDatabase::class.java, DATABASE_NAME

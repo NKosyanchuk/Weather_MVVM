@@ -3,7 +3,6 @@ package com.weather.weathermvvmapp.weather.ui
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -16,6 +15,7 @@ import com.weather.weathermvvmapp.extensions.showToast
 import com.weather.weathermvvmapp.weather.LifecycleBoundLocationManager
 import com.weather.weathermvvmapp.weather.ui.current_weather.CurrentWeatherFragment
 import com.weather.weathermvvmapp.weather.ui.future_weather.FutureWeatherFragment
+import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 private const val MY_PERMISSION_ACCESS_COARSE_LOCATION = 1
@@ -26,7 +26,7 @@ interface MainMenuNavigator {
     fun showLocationMapFragment()
 }
 
-class MainActivity : AppCompatActivity(), MainMenuNavigator {
+class MainActivity : DaggerAppCompatActivity(), MainMenuNavigator {
 
     private lateinit var navigationItemSelectedListener: BottomNavigationView.OnNavigationItemSelectedListener
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
@@ -119,12 +119,12 @@ class MainActivity : AppCompatActivity(), MainMenuNavigator {
     }
 
     override fun showCurrentWeatherFragment() {
-        val currentWeatherFragment = CurrentWeatherFragment.newInstance()
+        val currentWeatherFragment = CurrentWeatherFragment()
         replaceFragmentInActivity(currentWeatherFragment)
     }
 
     override fun showFeatureWeatherFragment() {
-        val featureWeatherFragment = FutureWeatherFragment.newInstance()
+        val featureWeatherFragment = FutureWeatherFragment()
         replaceFragmentInActivity(featureWeatherFragment)
     }
 

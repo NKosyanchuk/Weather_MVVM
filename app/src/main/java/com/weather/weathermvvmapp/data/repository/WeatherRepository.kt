@@ -15,6 +15,8 @@ import com.weather.weathermvvmapp.data.network.result.NetworkFutureWeatherResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Singleton
 
 
 private const val DAYS = 10
@@ -23,7 +25,8 @@ interface WeatherRepository {
     fun getSpecificWeatherModel(dt: Long?): LiveData<FutureWeatherListObjectModel>?
 }
 
-class WeatherRepositoryProvider(
+@Singleton
+class WeatherRepositoryProvider @Inject constructor(
     private val apiWeatherInterface: ApiWeatherInterface,
     private val weatherDatabase: WeatherDatabase,
     private val networkProvider: NetworkProvider

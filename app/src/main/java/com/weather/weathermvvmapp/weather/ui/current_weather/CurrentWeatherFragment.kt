@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.squareup.picasso.Picasso
 import com.weather.weathermvvmapp.R
 import com.weather.weathermvvmapp.data.database.current_db.CurrentWeatherModel
@@ -13,17 +13,17 @@ import com.weather.weathermvvmapp.data.network.WEATHER_ICON_URL
 import com.weather.weathermvvmapp.extensions.roundDoubleToString
 import com.weather.weathermvvmapp.extensions.setupTitle
 import com.weather.weathermvvmapp.extensions.showToast
+import com.weather.weathermvvmapp.extensions.viewModelProvider
 import com.weather.weathermvvmapp.weather.model.CurrentWeatherViewModel
-
+import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.current_weather_fragment.*
 import kotlinx.android.synthetic.main.future_weather_fragment.loadingGroup
+import javax.inject.Inject
 
 
-class CurrentWeatherFragment : Fragment() {
+class CurrentWeatherFragment : DaggerFragment() {
 
-    companion object {
-        fun newInstance() = CurrentWeatherFragment()
-    }
+    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var currentWeatherViewModel: CurrentWeatherViewModel
 
@@ -31,12 +31,9 @@ class CurrentWeatherFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.current_weather_fragment, container, false)
-    }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        currentWeatherViewModel = CurrentWeatherViewModel.getInstance(this)
+        currentWeatherViewModel = viewModelProvider(viewModelFactory)
+        return inflater.inflate(R.layout.current_weather_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

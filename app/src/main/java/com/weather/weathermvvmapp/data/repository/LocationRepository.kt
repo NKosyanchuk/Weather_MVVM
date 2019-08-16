@@ -8,13 +8,14 @@ import android.location.Location
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.weather.weathermvvmapp.extensions.asDeferred
+import javax.inject.Inject
 
 
 interface LocationProviderInterface {
     suspend fun getUserLastLocationAsync(): Location?
 }
 
-class LocationProvider(
+class LocationProvider @Inject constructor(
     private val context: Context,
     private val fusedLocationProviderClient: FusedLocationProviderClient
 ) : LocationProviderInterface {
